@@ -1,0 +1,23 @@
+{
+    "name": "lagdo/jaxon-symfony",
+    "type": "library",
+    "description": "Jaxon library integration for the Symfony Framework",
+    "authors": [
+        {"name": "Thierry Feuzeu"}
+    ],
+    "homepage": "https://github.com/lagdo/jaxon-symfony",
+    "license": "BSD-2-Clause",
+    "keywords": ["Jaxon", "Xajax", "Ajax", "PHP", "Framework", "Symfony"],
+    "support": {
+        "issues": "https://github.com/lagdo/jaxon-symfony/issues",
+        "source": "https://github.com/lagdo/jaxon-symfony"
+    },
+    "require": {
+        "lagdo/jaxon-core": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jaxon\\Symfony\\": "src/"
+        }
+    }
+}
