@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Symfony;
+namespace Jaxon\AjaxBundle;
 
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 

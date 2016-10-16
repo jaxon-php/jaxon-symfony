@@ -1,19 +1,19 @@
 <?php
 
-namespace Jaxon\Symfony;
+namespace Jaxon\AjaxBundle;
 
 class View
 {
     protected static $data;
-    protected $controller;
+    protected $template;
 
-    public function __construct($controller)
+    public function __construct($template)
     {
         if(!is_array(self::$data))
         {
             self::$data = array();
         }
-        $this->controller = $controller;
+        $this->template = $template;
     }
 
     /**
@@ -39,6 +39,6 @@ class View
      */
     public function render($template, array $data = array())
     {
-        return $this->controller->render($template, array_merge(self::$data, $data), true);
+        return $this->template->render($template, array_merge(self::$data, $data));
     }
 }
