@@ -39,6 +39,6 @@ class View
      */
     public function render($template, array $data = array())
     {
-        return $this->template->render($template, array_merge(self::$data, $data));
+        return trim($this->template->render($template, array_merge(self::$data, $data)), "\n");
     }
 }
