@@ -4,15 +4,12 @@ namespace Jaxon\AjaxBundle;
 
 class View
 {
-    protected static $data;
+    protected $data;
     protected $template;
 
     public function __construct($template)
     {
-        if(!is_array(self::$data))
-        {
-            self::$data = array();
-        }
+        $this->data = array();
         $this->template = $template;
     }
 
@@ -26,7 +23,7 @@ class View
      */
     public function share($name, $value)
     {
-        self::$data[$name] = $value;
+        $this->data[$name] = $value;
     }
 
     /**
@@ -39,6 +36,6 @@ class View
      */
     public function render($template, array $data = array())
     {
-        return trim($this->template->render($template, array_merge(self::$data, $data)), "\n");
+        return trim($this->template->render($template, array_merge($this->data, $data)), "\n");
     }
 }
