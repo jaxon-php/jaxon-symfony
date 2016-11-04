@@ -7,20 +7,6 @@ class Jaxon extends \Jaxon\Response\Response
     use \Jaxon\Framework\JaxonTrait;
 
     /**
-     * The application URL
-     * 
-     * @var string
-     */
-    protected $baseUrl;
-
-    /**
-     * The application web dir
-     * 
-     * @var string
-     */
-    protected $baseDir;
-
-    /**
      * The application root dir
      * 
      * @var string
@@ -46,16 +32,15 @@ class Jaxon extends \Jaxon\Response\Response
      *
      * @return void
      */
-    public function __construct($kernel, $request, $template, $debug)
+    public function __construct($kernel, $template, $debug)
     {
         $this->jaxon = jaxon();
         $this->response = new Response();
         $this->view = new View($template);
-        // Application URL and paths
-        $this->baseUrl = $request->getBaseUrl();
-        $this->baseDir = $request->getBasePath();
+
+        // The application root dir
         $this->rootDir = realpath($kernel->getRootDir() . '/..');
-        // Application debug option
+        // The application debug option
         $this->debug = $debug;
     }
 
@@ -73,14 +58,19 @@ class Jaxon extends \Jaxon\Response\Response
         }
         $this->setupCalled = true;
 
+        // The application URL
+        $baseUrl = $_SERVER['SERVER_NAME'];
+        // The application web dir
+        $baseDir = $_SERVER['DOCUMENT_ROOT'];
+
         // Use the Composer autoloader
         $this->jaxon->useComposerAutoloader();
         // Jaxon library default options
         $this->jaxon->setOptions(array(
             'js.app.extern' => !$this->debug,
             'js.app.minify' => !$this->debug,
-            'js.app.uri' => $this->baseUrl . '/jaxon/js',
-            'js.app.dir' => $this->baseDir . '/jaxon/js',
+            'js.app.uri' => '//' . $baseUrl . '/jaxon/js',
+            'js.app.dir' => $baseDir . '/jaxon/js',
         ));
 
         // Read and set the config options from the config file
