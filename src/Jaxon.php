@@ -2,7 +2,7 @@
 
 namespace Jaxon\AjaxBundle;
 
-class Jaxon extends \Jaxon\Response\Response
+class Jaxon
 {
     use \Jaxon\Framework\JaxonTrait;
 
@@ -51,13 +51,6 @@ class Jaxon extends \Jaxon\Response\Response
      */
     public function setup()
     {
-        // This function should be called only once
-        if(($this->setupCalled))
-        {
-            return;
-        }
-        $this->setupCalled = true;
-
         // The application URL
         $baseUrl = $_SERVER['SERVER_NAME'];
         // The application web dir
