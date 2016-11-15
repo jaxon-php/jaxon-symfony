@@ -54,7 +54,7 @@ The following options can be defined in the `app` section of the config file.
 
 | Name | Default value | Description |
 |------|---------------|-------------|
-| dir | /src/Jaxon/App | The directory of the Jaxon classes |
+| dir | /src/Jaxon/App | The directory of the Jaxon classes. It is relative to the Symfony install dir, and must be manually created. |
 | namespace | \Jaxon\App | The namespace of the Jaxon classes |
 | excluded | empty array | Prevent Jaxon from exporting some methods |
 | | | |
