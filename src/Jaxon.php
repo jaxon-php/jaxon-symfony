@@ -2,9 +2,11 @@
 
 namespace Jaxon\AjaxBundle;
 
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
+
 class Jaxon
 {
-    use \Jaxon\Framework\JaxonTrait;
+    use \Jaxon\Framework\PluginTrait;
 
     /**
      * The application root dir
@@ -34,10 +36,7 @@ class Jaxon
      */
     public function __construct($kernel, $template, $debug)
     {
-        $this->jaxon = jaxon();
-        $this->response = new Response();
-        $this->view = new View($template);
-
+        $this->template = $template;
         // The application root dir
         $this->rootDir = realpath($kernel->getRootDir() . '/..');
         // The application debug option
@@ -51,13 +50,12 @@ class Jaxon
      */
     public function setup()
     {
+        $this->view = new View($this->template);
         // The application URL
         $baseUrl = $_SERVER['SERVER_NAME'];
         // The application web dir
         $baseDir = $_SERVER['DOCUMENT_ROOT'];
 
-        // Use the Composer autoloader
-        $this->jaxon->useComposerAutoloader();
         // Jaxon library default options
         $this->jaxon->setOptions(array(
             'js.app.extern' => !$this->debug,
@@ -94,5 +92,26 @@ class Jaxon
         }
         // Register the default Jaxon class directory
         $this->jaxon->addClassDir($controllerDir, $namespace, $excluded);
+    }
+
+    /**
+     * Wrap the Jaxon response into an HTTP response.
+     *
+     * @param  $code        The HTTP Response code
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function httpResponse($code = '200')
+    {
+        // Send HTTP Headers
+        $this->response->sendHeaders();
+        // Create and return a Symfony HTTP response
+        $response = new HttpResponse();
+        // $response->headers->set('Content-Type', $this->response->getContentType());
+        // $response->setCharset($this->response->getCharacterEncoding());
+        $response->setStatusCode($code);
+        $response->setContent($this->response->getOutput());
+        // prints the HTTP headers followed by the content
+        $response->send();
     }
 }
