@@ -104,11 +104,11 @@ class Jaxon
     public function httpResponse($code = '200')
     {
         // Send HTTP Headers
-        $this->response->sendHeaders();
+        // $this->response->sendHeaders();
         // Create and return a Symfony HTTP response
         $response = new HttpResponse();
-        // $response->headers->set('Content-Type', $this->response->getContentType());
-        // $response->setCharset($this->response->getCharacterEncoding());
+        $response->headers->set('Content-Type', $this->response->getContentType());
+        $response->setCharset($this->response->getCharacterEncoding());
         $response->setStatusCode($code);
         $response->setContent($this->response->getOutput());
         // prints the HTTP headers followed by the content
