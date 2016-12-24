@@ -2,6 +2,6 @@
 
 namespace Jaxon\AjaxBundle;
 
-class Controller extends \Jaxon\Framework\Controller
+class Controller extends \Jaxon\Module\Controller
 {
 }

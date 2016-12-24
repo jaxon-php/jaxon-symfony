@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class Jaxon
 {
-    use \Jaxon\Framework\PluginTrait;
+    use \Jaxon\Module\Traits\Module;
 
     /**
      * The application root dir
@@ -44,54 +44,82 @@ class Jaxon
     }
 
     /**
-     * Initialize the Jaxon module.
+     * Set the module specific options for the Jaxon library.
      *
      * @return void
      */
-    public function setup()
+    protected function setup()
     {
-        $this->view = new View($this->template);
         // The application URL
         $baseUrl = $_SERVER['SERVER_NAME'];
         // The application web dir
         $baseDir = $_SERVER['DOCUMENT_ROOT'];
 
-        // Jaxon library default options
-        $this->jaxon->setOptions(array(
-            'js.app.extern' => !$this->debug,
-            'js.app.minify' => !$this->debug,
-            'js.app.uri' => '//' . $baseUrl . '/jaxon/js',
-            'js.app.dir' => $baseDir . '/jaxon/js',
-        ));
-
         // Read and set the config options from the config file
-        $config = $this->jaxon->readConfigFile($this->rootDir . '/app/config/jaxon.yml', 'jaxon_ajax.lib');
+        $jaxon = jaxon();
+        $this->appConfig = $jaxon->readConfigFile($this->rootDir . '/app/config/jaxon.yml', 'jaxon_ajax.lib', 'jaxon_ajax.app');
+
+        // Jaxon library settings
+        // Default values
+        if(!$jaxon->hasOption('js.app.extern'))
+        {
+            $jaxon->setOption('js.app.extern', !$this->debug);
+        }
+        if(!$jaxon->hasOption('js.app.minify'))
+        {
+            $jaxon->setOption('js.app.minify', !$this->debug);
+        }
+        if(!$jaxon->hasOption('js.app.uri'))
+        {
+            $jaxon->setOption('js.app.uri', '//' . $baseUrl . '/jaxon/js');
+        }
+        if(!$jaxon->hasOption('js.app.dir'))
+        {
+            $jaxon->setOption('js.app.dir', $baseDir . '/jaxon/js');
+        }
 
         // Jaxon application settings
-        $appConfig = array();
-        if(array_key_exists('jaxon_ajax', $config) &&
-            array_key_exists('app', $config['jaxon_ajax']) &&
-            is_array($config['jaxon_ajax']['app']))
+        // Default values
+        if(!$this->appConfig->hasOption('controllers.directory'))
         {
-            $appConfig = $config['jaxon_ajax']['app'];
+            $this->appConfig->setOption('controllers.directory', $this->rootDir . '/src/Jaxon/App/Controllers');
         }
-        $controllerDir = (array_key_exists('dir', $appConfig) ? $appConfig['dir'] : $this->rootDir . '/src/Jaxon/App');
-        $namespace = (array_key_exists('namespace', $appConfig) ? $appConfig['namespace'] : '\\Jaxon\\App');
-        $excluded = (array_key_exists('excluded', $appConfig) ? $appConfig['excluded'] : array());
-        // The public methods of the Controller base class must not be exported to javascript
-        $controllerClass = new \ReflectionClass('\\Jaxon\\AjaxBundle\\Controller');
-        foreach ($controllerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $xMethod)
+        if(!$this->appConfig->hasOption('controllers.namespace'))
         {
-            $excluded[] = $xMethod->getShortName();
+            $this->appConfig->setOption('controllers.namespace', '\\Jaxon\\App');
         }
+        if(!$this->appConfig->hasOption('controllers.protected') || !is_array($this->appConfig->getOption('protected')))
+        {
+            $this->appConfig->setOption('controllers.protected', array());
+        }
+        // Jaxon controller class
+        $this->setControllerClass('\\Jaxon\\AjaxBundle\\Controller');
+    }
 
-        // Set the request URI
-        if(!$this->jaxon->getOption('core.request.uri'))
+    /**
+     * Set the module specific options for the Jaxon library.
+     *
+     * This method needs to set at least the Jaxon request URI.
+     *
+     * @return void
+     */
+    protected function check()
+    {
+        // Todo: check the mandatory options
+    }
+
+    /**
+     * Return the view renderer.
+     *
+     * @return void
+     */
+    protected function view()
+    {
+        if($this->viewRenderer == null)
         {
-            $this->jaxon->setOption('core.request.uri', 'jaxon');
+            $this->viewRenderer = new View($this->template);
         }
-        // Register the default Jaxon class directory
-        $this->jaxon->addClassDir($controllerDir, $namespace, $excluded);
+        return $this->viewRenderer;
     }
 
     /**
@@ -103,8 +131,6 @@ class Jaxon
      */
     public function httpResponse($code = '200')
     {
-        // Send HTTP Headers
-        // $this->response->sendHeaders();
         // Create and return a Symfony HTTP response
         $response = new HttpResponse();
         $response->headers->set('Content-Type', $this->response->getContentType());
