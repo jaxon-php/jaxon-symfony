@@ -2,6 +2,8 @@
 
 namespace Jaxon\AjaxBundle;
 
+use Jaxon\Config\Yaml as Config;
+
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class Jaxon
@@ -48,50 +50,23 @@ class Jaxon
      *
      * @return void
      */
-    protected function setup()
+    protected function jaxonSetup()
     {
         // The application URL
-        $baseUrl = $_SERVER['SERVER_NAME'];
+        $baseUrl = '//' . $_SERVER['SERVER_NAME'];
         // The application web dir
         $baseDir = $_SERVER['DOCUMENT_ROOT'];
 
         // Read and set the config options from the config file
-        $jaxon = jaxon();
-        $this->appConfig = $jaxon->readConfigFile($this->rootDir . '/app/config/jaxon.yml', 'jaxon_ajax.lib', 'jaxon_ajax.app');
+        $configFilePath = $this->rootDir . '/app/config/jaxon.yml';
+        $this->appConfig = Config::read($configFilePath, 'jaxon_ajax.lib', 'jaxon_ajax.app');
 
-        // Jaxon library settings
-        // Default values
-        if(!$jaxon->hasOption('js.app.extern'))
-        {
-            $jaxon->setOption('js.app.extern', !$this->debug);
-        }
-        if(!$jaxon->hasOption('js.app.minify'))
-        {
-            $jaxon->setOption('js.app.minify', !$this->debug);
-        }
-        if(!$jaxon->hasOption('js.app.uri'))
-        {
-            $jaxon->setOption('js.app.uri', '//' . $baseUrl . '/jaxon/js');
-        }
-        if(!$jaxon->hasOption('js.app.dir'))
-        {
-            $jaxon->setOption('js.app.dir', $baseDir . '/jaxon/js');
-        }
+        // Jaxon library default settings
+        $this->setLibraryOptions(!$this->debug, !$this->debug, $baseUrl . '/jaxon/js', $baseDir . '/jaxon/js');
 
-        // Jaxon application settings
-        // Default values
-        if(!$this->appConfig->hasOption('controllers.directory'))
-        {
-            $this->appConfig->setOption('controllers.directory', $this->rootDir . '/src/Jaxon/App/Controllers');
-        }
-        if(!$this->appConfig->hasOption('controllers.namespace'))
-        {
-            $this->appConfig->setOption('controllers.namespace', '\\Jaxon\\App');
-        }
-        if(!$this->appConfig->hasOption('controllers.protected') || !is_array($this->appConfig->getOption('protected')))
-        {
-            $this->appConfig->setOption('controllers.protected', array());
-        }
+        // Jaxon application default settings
+        $this->setApplicationOptions($this->rootDir . '/jaxon/Controller', '\\Jaxon\\App');
+
         // Jaxon controller class
         $this->setControllerClass('\\Jaxon\\AjaxBundle\\Controller');
     }
@@ -103,7 +78,7 @@ class Jaxon
      *
      * @return void
      */
-    protected function check()
+    protected function jaxonCheck()
     {
         // Todo: check the mandatory options
     }
@@ -113,13 +88,13 @@ class Jaxon
      *
      * @return void
      */
-    protected function view()
+    protected function jaxonView()
     {
-        if($this->viewRenderer == null)
+        if($this->jaxonViewRenderer == null)
         {
-            $this->viewRenderer = new View($this->template);
+            $this->jaxonViewRenderer = new View($this->template);
         }
-        return $this->viewRenderer;
+        return $this->jaxonViewRenderer;
     }
 
     /**
