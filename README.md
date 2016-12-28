@@ -54,9 +54,10 @@ The following options can be defined in the `app` section of the config file.
 
 | Name | Default value | Description |
 |------|---------------|-------------|
-| dir | /src/Jaxon/App | The directory of the Jaxon classes. It is relative to the Symfony install dir, and must be manually created. |
-| namespace | \Jaxon\App | The namespace of the Jaxon classes |
-| excluded | empty array | Prevent Jaxon from exporting some methods |
+| controllers.directory | jaxon/Controller | The directory of the Jaxon classes |
+| controllers.namespace | \Jaxon\App  | The namespace of the Jaxon classes |
+| controllers.separator | .           | The separator in Jaxon class names |
+| controllers.protected | empty array | Prevent Jaxon from exporting some methods |
 | | | |
 
 Usage
@@ -92,11 +93,12 @@ Then it calls the `$jaxon->css()`, `$jaxon->js()` and `$jaxon->script()` functio
 
 ### The Jaxon classes
 
-The Jaxon classes of the application must all be located in the directory indicated by the `app.dir` option in the `jaxon.yml` config file.
-If there is a namespace associated, the `app.namespace` option should be set accordingly.
-The `app.namespace` option must be explicitely set to `null`, `false` or an empty string if there is no namespace.
+The Jaxon classes must inherit from `\Jaxon\AjaxBundle\Controller`.
 
-By default, the Jaxon classes are located in the `src/Jaxon/App` dir of the Symfony application, and the associated namespace is `\Jaxon\App`.
+The Jaxon classes of the application must all be located in the directory indicated by the `app.controllers.directory` option in the `jaxon.yml` config file.
+If there is a namespace associated, the `app.controllers.namespace` option should be set accordingly.
+
+By default, the Jaxon classes are located in the `jaxon/Controller` dir of the Symfony application, and the associated namespace is `\Jaxon\App`.
 
 Contribute
 ----------
@@ -107,4 +109,4 @@ Contribute
 License
 -------
 
-The project is licensed under the BSD license.
+The package is licensed under the BSD license.
