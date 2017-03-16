@@ -69,6 +69,12 @@ class Jaxon
 
         // Jaxon controller class
         $this->setControllerClass('\\Jaxon\\AjaxBundle\\Controller');
+
+        // Set the view
+        $template = $this->template;
+        $this->setJaxonView(function() use($template) {
+            return new View($template);
+        });
     }
 
     /**
@@ -81,20 +87,6 @@ class Jaxon
     protected function jaxonCheck()
     {
         // Todo: check the mandatory options
-    }
-
-    /**
-     * Return the view renderer.
-     *
-     * @return void
-     */
-    protected function jaxonView()
-    {
-        if($this->jaxonViewRenderer == null)
-        {
-            $this->jaxonViewRenderer = new View($this->template);
-        }
-        return $this->jaxonViewRenderer;
     }
 
     /**
