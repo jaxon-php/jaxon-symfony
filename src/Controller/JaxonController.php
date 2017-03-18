@@ -11,6 +11,7 @@ class JaxonController extends Controller
      */
     public function indexAction()
     {
+        // Process the Jaxon request
         $jaxon = $this->get('jaxon.ajax');
         if($jaxon->canProcessRequest())
         {

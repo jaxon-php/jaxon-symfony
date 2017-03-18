@@ -75,6 +75,11 @@ class Jaxon
         $this->setJaxonView(function() use($template) {
             return new View($template);
         });
+
+        // Set the session
+        $this->setJaxonSession(function(){
+            return new Session();
+        });
     }
 
     /**
