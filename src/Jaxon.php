@@ -67,9 +67,6 @@ class Jaxon
         // Jaxon application default settings
         $this->setApplicationOptions($this->rootDir . '/jaxon/Controller', '\\Jaxon\\App');
 
-        // Jaxon controller class
-        $this->setControllerClass('\\Jaxon\\AjaxBundle\\Controller');
-
         // Set the view
         $template = $this->template;
         $this->setJaxonView(function() use($template) {
