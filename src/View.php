@@ -25,6 +25,6 @@ class View extends Facade
     public function make(Store $store)
     {
         // Render the template
-        return trim($this->renderer->render($store->getViewPath(), $store->getViewData()), " \t\n");
+        return trim($this->renderer->render($store->getViewPath() . '.html.twig', $store->getViewData()), " \t\n");
     }
 }
