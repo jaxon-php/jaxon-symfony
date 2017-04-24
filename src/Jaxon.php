@@ -67,14 +67,18 @@ class Jaxon
         // Jaxon application default settings
         $this->setApplicationOptions($this->rootDir . '/jaxon/Controller', '\\Jaxon\\App');
 
-        // Set the view
+        // Set the default view namespace
+        $this->addViewNamespace('default', '', '', 'twig');
+        $this->appConfig->setOption('options.views.default', 'default');
+
+        // Add the view renderer
         $template = $this->template;
-        $this->setJaxonView(function() use($template) {
+        $this->addViewRenderer('twig', function() use($template) {
             return new View($template);
         });
 
-        // Set the session
-        $this->setJaxonSession(function(){
+        // Set the session manager
+        $this->setSessionManager(function(){
             return new Session();
         });
     }
