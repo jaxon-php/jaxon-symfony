@@ -8,6 +8,7 @@ use Jaxon\Module\Interfaces\View as ViewInterface;
 class View implements ViewInterface
 {
     protected $renderer;
+    protected $namespaces = array();
 
     public function __construct($renderer)
     {
@@ -24,7 +25,12 @@ class View implements ViewInterface
      * @return void
      */
     public function addNamespace($sNamespace, $sDirectory, $sExtension = '')
-    {}
+    {
+        $this->namespaces[$sNamespace] = array(
+            'directory' => $sDirectory,
+            'extension' => $sExtension,
+        );
+    }
 
     /**
      * Render a view
@@ -35,7 +41,12 @@ class View implements ViewInterface
      */
     public function render(Store $store)
     {
+        $sExtension = '';
+        if(key_exists($store->getNamespace(), $this->namespaces))
+        {
+            $sExtension = $this->namespaces[$store->getNamespace()]['extension'];
+        }
         // Render the template
-        return trim($this->renderer->render($store->getViewName() . '.html.twig', $store->getViewData()), " \t\n");
+        return trim($this->renderer->render($store->getViewName() . $sExtension, $store->getViewData()), " \t\n");
     }
 }

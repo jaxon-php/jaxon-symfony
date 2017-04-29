@@ -1,5 +1,4 @@
 services:
     jaxon.ajax:
         class: Jaxon\AjaxBundle\Jaxon
-        arguments: ["@kernel", "@templating", '%kernel.debug%']
-        scope: request
+        arguments: ["@templating", "%jaxon%", "%kernel.debug%"]

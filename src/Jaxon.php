@@ -2,20 +2,13 @@
 
 namespace Jaxon\AjaxBundle;
 
-use Jaxon\Config\Yaml as Config;
+use Jaxon\Utils\Config;
 
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class Jaxon
 {
     use \Jaxon\Module\Traits\Module;
-
-    /**
-     * The application root dir
-     * 
-     * @var string
-     */
-    protected $rootDir;
 
     /**
      * The application debug option
@@ -32,15 +25,22 @@ class Jaxon
     protected $template;
 
     /**
+     * The bundle configuration
+     * 
+     * @var array
+     */
+    public $configs;
+
+    /**
      * Create a new Jaxon instance.
      *
      * @return void
      */
-    public function __construct($kernel, $template, $debug)
+    public function __construct($template, $configs, $debug)
     {
         $this->template = $template;
-        // The application root dir
-        $this->rootDir = realpath($kernel->getRootDir() . '/..');
+        // The application debug option
+        $this->configs = $configs;
         // The application debug option
         $this->debug = $debug;
     }
@@ -57,18 +57,16 @@ class Jaxon
         // The application web dir
         $baseDir = $_SERVER['DOCUMENT_ROOT'];
 
-        // Read and set the config options from the config file
-        $configFilePath = $this->rootDir . '/app/config/jaxon.yml';
-        $this->appConfig = Config::read($configFilePath, 'jaxon_ajax.lib', 'jaxon_ajax.app');
+        // Set the config options
+        jaxon()->setOptions($this->configs, 'lib');
+        $this->appConfig = new Config();
+        $this->appConfig->setOptions($this->configs, 'app');
 
         // Jaxon library default settings
         $this->setLibraryOptions(!$this->debug, !$this->debug, $baseUrl . '/jaxon/js', $baseDir . '/jaxon/js');
 
-        // Jaxon application default settings
-        $this->setApplicationOptions($this->rootDir . '/jaxon/Controller', '\\Jaxon\\App');
-
         // Set the default view namespace
-        $this->addViewNamespace('default', '', '', 'twig');
+        $this->addViewNamespace('default', '', '.html.twig', 'twig');
         $this->appConfig->setOption('options.views.default', 'default');
 
         // Add the view renderer
