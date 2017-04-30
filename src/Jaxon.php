@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class Jaxon
 {
-    use \Jaxon\Module\Traits\Module;
+    use \Jaxon\Sentry\Traits\Armada;
 
     /**
      * The application debug option
@@ -57,26 +57,28 @@ class Jaxon
         // The application web dir
         $baseDir = $_SERVER['DOCUMENT_ROOT'];
 
+        $sentry = jaxon()->sentry();
+
         // Set the config options
         jaxon()->setOptions($this->configs, 'lib');
         $this->appConfig = new Config();
         $this->appConfig->setOptions($this->configs, 'app');
 
         // Jaxon library default settings
-        $this->setLibraryOptions(!$this->debug, !$this->debug, $baseUrl . '/jaxon/js', $baseDir . '/jaxon/js');
+        $sentry->setLibraryOptions(!$this->debug, !$this->debug, $baseUrl . '/jaxon/js', $baseDir . '/jaxon/js');
 
         // Set the default view namespace
-        $this->addViewNamespace('default', '', '.html.twig', 'twig');
+        $sentry->addViewNamespace('default', '', '.html.twig', 'twig');
         $this->appConfig->setOption('options.views.default', 'default');
 
         // Add the view renderer
         $template = $this->template;
-        $this->addViewRenderer('twig', function() use($template) {
+        $sentry->addViewRenderer('twig', function() use($template) {
             return new View($template);
         });
 
         // Set the session manager
-        $this->setSessionManager(function(){
+        $sentry->setSessionManager(function(){
             return new Session();
         });
     }

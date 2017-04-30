@@ -52,12 +52,21 @@ The options in the `lib` section are those of the Jaxon core library, while the 
 
 The following options can be defined in the `app` section of the config file.
 
+| Name | Description |
+|------|---------------|
+| classes | An array of directory containing Jaxon application classes |
+| views   | An array of directory containing Jaxon application views |
+| | | |
+
+By default, the `views` array is empty. Views are rendered from the framework default location.
+There's a single entry in the `classes` array with the following values.
+
 | Name | Default value | Description |
 |------|---------------|-------------|
-| controllers.directory | jaxon/Controller | The directory of the Jaxon classes |
-| controllers.namespace | \Jaxon\App  | The namespace of the Jaxon classes |
-| controllers.separator | .           | The separator in Jaxon class names |
-| controllers.protected | empty array | Prevent Jaxon from exporting some methods |
+| directory | jaxon/Classes | The directory of the Jaxon classes |
+| namespace | \Jaxon\App  | The namespace of the Jaxon classes |
+| separator | .           | The separator in Jaxon class names |
+| protected | empty array | Prevent Jaxon from exporting some methods |
 | | | |
 
 Usage
@@ -93,19 +102,15 @@ Then it calls the `$jaxon->css()`, `$jaxon->js()` and `$jaxon->script()` functio
 
 ### The Jaxon classes
 
-The Jaxon classes must inherit from `\Jaxon\Module\Controller`.
+The Jaxon classes must inherit from `\Jaxon\Sentry\Classes\Base`.
+By default, they are located in the `jaxon/Classes` dir of the Symfony application, and the associated namespace is `\Jaxon\App`.
 
-The Jaxon classes of the application must all be located in the directory indicated by the `app.controllers.directory` option in the `jaxon.yml` config file.
-If there is a namespace associated, the `app.controllers.namespace` option should be set accordingly.
-
-By default, the Jaxon classes are located in the `jaxon/Controller` dir of the Symfony application, and the associated namespace is `\Jaxon\App`.
-
-This is a simple example of a Jaxon class, defined in the `jaxon/Controller/HelloWorld.php` file.
+This is a simple example of a Jaxon class, defined in the `jaxon/Classes/HelloWorld.php` file.
 
 ```php
 namespace Jaxon\App;
 
-class HelloWorld extends \Jaxon\Module\Controller
+class HelloWorld extends \Jaxon\Sentry\Classes\Base
 {
     public function sayHello()
     {
