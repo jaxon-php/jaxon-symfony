@@ -38,11 +38,12 @@ Import the service definition and configuration file of the Jaxon bundle in the 
 ```yaml
 imports:
     ...
+    - { resource: jaxon.yml }
     - { resource: "@JaxonAjaxBundle/Resources/config/services.yml" }
 ```
 
 Create and edit the `app/config/jaxon.yml` file to suit the needs of your application.
-A sample config file is available online in [the examples repo](https://github.com/jaxon-php/jaxon-examples/blob/master/frameworks/symfony/app/config/jaxon.yml).
+A sample config file is available online at [the examples repo](https://github.com/jaxon-php/jaxon-examples/blob/master/frameworks/symfony/app/config/jaxon.yml).
 
 Configuration
 ------------
