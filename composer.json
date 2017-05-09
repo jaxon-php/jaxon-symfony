@@ -16,6 +16,9 @@
         "jaxon-php/jaxon-sentry": "~2.0",
         "symfony/symfony": "2.8.*|3.0.*|3.1.*"
     },
+    "provide": {
+        "jaxon-php/jaxon-view-twig": "~2.0"
+    },
     "autoload": {
         "psr-4": {
             "Jaxon\\AjaxBundle\\": "src/"
