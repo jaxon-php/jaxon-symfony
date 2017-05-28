@@ -2,8 +2,6 @@
 
 namespace Jaxon\AjaxBundle;
 
-use Jaxon\Utils\Config;
-
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class Jaxon
@@ -57,11 +55,13 @@ class Jaxon
         // The application web dir
         $baseDir = $_SERVER['DOCUMENT_ROOT'];
 
-        $sentry = jaxon()->sentry();
+        // Jaxon library settings
+        $jaxon = jaxon();
+        $sentry = $jaxon->sentry();
+        $jaxon->setOptions($this->configs, 'lib');
 
-        // Set the config options
-        jaxon()->setOptions($this->configs, 'lib');
-        $this->appConfig = new Config();
+        /// Jaxon application settings
+        $this->appConfig = $jaxon->newConfig();
         $this->appConfig->setOptions($this->configs, 'app');
 
         // Jaxon library default settings
