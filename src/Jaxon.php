@@ -10,21 +10,21 @@ class Jaxon
 
     /**
      * The application debug option
-     * 
+     *
      * @var bool
      */
     protected $debug;
 
     /**
      * The template engine
-     * 
+     *
      * @var \Symfony\Component\Templating\EngineInterface
      */
     protected $template;
 
     /**
      * The bundle configuration
-     * 
+     *
      * @var array
      */
     public $configs;
@@ -73,12 +73,12 @@ class Jaxon
 
         // Add the view renderer
         $template = $this->template;
-        $sentry->addViewRenderer('twig', function() use($template) {
+        $sentry->addViewRenderer('twig', function () use ($template) {
             return new View($template);
         });
 
         // Set the session manager
-        $sentry->setSessionManager(function(){
+        $sentry->setSessionManager(function () {
             return new Session();
         });
     }
