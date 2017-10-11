@@ -56,13 +56,13 @@ class JaxonController extends Controller
         // Process the Jaxon request
         $jaxon = $this->get('jaxon.ajax');
 
-        $jaxon->onInit(function($instance) {
+        $jaxon->onInit(function ($instance) {
             $this->initInstance($instance);
         });
-        $jaxon->onBefore(function($instance, $method, &$bEndRequest) {
+        $jaxon->onBefore(function ($instance, $method, &$bEndRequest) {
             $this->beforeRequest($instance, $method, $bEndRequest);
         });
-        $jaxon->onAfter(function($instance, $method) {
+        $jaxon->onAfter(function ($instance, $method) {
             $this->afterRequest($instance, $method);
         });
 
