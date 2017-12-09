@@ -41,6 +41,8 @@ class Jaxon
         $this->configs = $configs;
         // The application debug option
         $this->debug = $debug;
+        // Initialize the Jaxon plugin
+        $this->_jaxonSetup();
     }
 
     /**
