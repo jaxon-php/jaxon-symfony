@@ -1,4 +1,4 @@
 services:
     jaxon.ajax:
         class: Jaxon\AjaxBundle\Jaxon
-        arguments: ["@templating", "%jaxon%", "%kernel.debug%"]
+        arguments: ["@twig", "%jaxon%", "%kernel.debug%"]
