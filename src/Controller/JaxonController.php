@@ -2,21 +2,24 @@
 
 namespace Jaxon\AjaxBundle\Controller;
 
+use Jaxon\AjaxBundle\Jaxon;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class JaxonController extends Controller
 {
     /**
-     * Callback for initializing a Jaxon class instance.
-     *
-     * This function is called anytime a Jaxon class is instanciated.
-     *
-     * @param object            $instance               The Jaxon class instance
-     *
-     * @return void
+     * @var Jaxon       The Jaxon plugin
      */
-    public function initInstance($instance)
+    protected $jaxon;
+
+    /**
+     * The constructor.
+     *
+     * @param Jaxon     $jaxon      The Jaxon plugin
+     */
+    public function __construct(Jaxon $jaxon)
     {
+        $this->jaxon = $jaxon;
     }
 
     /**
@@ -53,22 +56,17 @@ class JaxonController extends Controller
      */
     public function indexAction()
     {
-        // Process the Jaxon request
-        $jaxon = $this->get('jaxon.ajax');
-
-        $jaxon->onInit(function ($instance) {
-            $this->initInstance($instance);
-        });
-        $jaxon->onBefore(function ($instance, $method, &$bEndRequest) {
+        $this->jaxon->callback()->before(function ($instance, $method, &$bEndRequest) {
             $this->beforeRequest($instance, $method, $bEndRequest);
         });
-        $jaxon->onAfter(function ($instance, $method) {
+        $this->jaxon->callback()->after(function ($instance, $method) {
             $this->afterRequest($instance, $method);
         });
 
-        if($jaxon->canProcessRequest())
+        if($this->jaxon->canProcessRequest())
         {
-            $jaxon->processRequest();
+            $this->jaxon->processRequest();
+            return $this->jaxon->httpResponse();
         }
     }
 }

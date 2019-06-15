@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class Jaxon
 {
-    use \Jaxon\Sentry\Traits\Armada;
+    use \Jaxon\Features\App;
 
     /**
      * The application debug option
@@ -41,60 +41,32 @@ class Jaxon
         $this->configs = $configs;
         // The application debug option
         $this->debug = $debug;
-        // Initialize the Jaxon plugin
-        $this->_jaxonSetup();
-    }
 
-    /**
-     * Set the module specific options for the Jaxon library.
-     *
-     * @return void
-     */
-    protected function jaxonSetup()
-    {
         // The application URL
-        $baseUrl = '//' . $_SERVER['SERVER_NAME'];
+        $sJsUrl = '//' . $_SERVER['SERVER_NAME'] . '/jaxon/js';
         // The application web dir
-        $baseDir = $_SERVER['DOCUMENT_ROOT'];
+        $sJsDir = $_SERVER['DOCUMENT_ROOT'] . '/jaxon/js';
 
-        // Jaxon library settings
-        $jaxon = jaxon();
-        $sentry = $jaxon->sentry();
-        $jaxon->setOptions($this->configs, 'lib');
-
-        /// Jaxon application settings
-        $this->appConfig = $jaxon->newConfig();
-        $this->appConfig->setOptions($this->configs, 'app');
-
-        // Jaxon library default settings
-        $sentry->setLibraryOptions(!$this->debug, !$this->debug, $baseUrl . '/jaxon/js', $baseDir . '/jaxon/js');
-
+        $di = jaxon()->di();
+        $viewManager = $di->getViewmanager();
         // Set the default view namespace
-        $sentry->addViewNamespace('default', '', '.html.twig', 'twig');
-        $this->appConfig->setOption('options.views.default', 'default');
-
+        $viewManager->addNamespace('default', '', '.html.twig', 'twig');
         // Add the view renderer
-        $template = $this->template;
-        $sentry->addViewRenderer('twig', function () use ($template) {
-            return new View($template);
+        $viewManager->addRenderer('twig', function () {
+            return new View($this->template);
         });
 
         // Set the session manager
-        $sentry->setSessionManager(function () {
+        $di->setSessionManager(function () {
             return new Session();
         });
-    }
 
-    /**
-     * Set the module specific options for the Jaxon library.
-     *
-     * This method needs to set at least the Jaxon request URI.
-     *
-     * @return void
-     */
-    protected function jaxonCheck()
-    {
-        // Todo: check the mandatory options
+        $this->jaxon()
+            ->lib($this->configs['lib'])
+            ->app($this->configs['app'])
+            // ->uri($sUri)
+            ->js(!$this->debug, $sJsUrl, $sJsDir, !$this->debug)
+            ->bootstrap(false);
     }
 
     /**
