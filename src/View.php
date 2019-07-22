@@ -42,7 +42,7 @@ class View implements ViewInterface
     public function render(Store $store)
     {
         $sExtension = '';
-        if(key_exists($store->getNamespace(), $this->namespaces))
+        if(array_key_exists($store->getNamespace(), $this->namespaces))
         {
             $sExtension = $this->namespaces[$store->getNamespace()]['extension'];
         }
