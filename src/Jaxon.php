@@ -61,12 +61,12 @@ class Jaxon
             return new Session();
         });
 
-        $this->jaxon()
+        $this->bootstrap()
             ->lib($this->configs['lib'])
             ->app($this->configs['app'])
             // ->uri($sUri)
             ->js(!$this->debug, $sJsUrl, $sJsDir, !$this->debug)
-            ->bootstrap(false);
+            ->run(false);
     }
 
     /**
