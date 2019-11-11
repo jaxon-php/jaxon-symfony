@@ -66,7 +66,7 @@ class Jaxon
             ->app($this->configs['app'])
             // ->uri($sUri)
             ->js(!$this->debug, $sJsUrl, $sJsDir, !$this->debug)
-            ->run(false);
+            ->run();
 
         // Prevent the Jaxon library from sending the response or exiting
         $jaxon->setOption('core.response.send', false);
