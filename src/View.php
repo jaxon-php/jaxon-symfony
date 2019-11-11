@@ -2,17 +2,17 @@
 
 namespace Jaxon\AjaxBundle;
 
-use Jaxon\Sentry\View\Store;
-use Jaxon\Sentry\Interfaces\View as ViewInterface;
+use Jaxon\Utils\View\Store;
+use Jaxon\Contracts\View as ViewContract;
 
-class View implements ViewInterface
+class View implements ViewContract
 {
-    protected $renderer;
-    protected $namespaces = array();
+    protected $xRenderer;
+    protected $aNamespaces = array();
 
-    public function __construct($renderer)
+    public function __construct($xRenderer)
     {
-        $this->renderer = $renderer;
+        $this->xRenderer = $xRenderer;
     }
 
     /**
@@ -26,7 +26,7 @@ class View implements ViewInterface
      */
     public function addNamespace($sNamespace, $sDirectory, $sExtension = '')
     {
-        $this->namespaces[$sNamespace] = array(
+        $this->aNamespaces[$sNamespace] = array(
             'directory' => $sDirectory,
             'extension' => $sExtension,
         );
@@ -44,9 +44,9 @@ class View implements ViewInterface
         $sExtension = '';
         if(array_key_exists($store->getNamespace(), $this->namespaces))
         {
-            $sExtension = $this->namespaces[$store->getNamespace()]['extension'];
+            $sExtension = $this->aNamespaces[$store->getNamespace()]['extension'];
         }
         // Render the template
-        return trim($this->renderer->render($store->getViewName() . $sExtension, $store->getViewData()), " \t\n");
+        return trim($this->xRenderer->render($store->getViewName() . $sExtension, $store->getViewData()), " \t\n");
     }
 }

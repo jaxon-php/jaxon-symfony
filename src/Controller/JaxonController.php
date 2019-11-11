@@ -2,46 +2,24 @@
 
 namespace Jaxon\AjaxBundle\Controller;
 
+use Jaxon\AjaxBundle\Jaxon;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class JaxonController extends Controller
 {
     /**
-     * Callback for initializing a Jaxon class instance.
-     *
-     * This function is called anytime a Jaxon class is instanciated.
-     *
-     * @param object            $instance               The Jaxon class instance
-     *
-     * @return void
+     * @var Jaxon       The Jaxon plugin
      */
-    public function initInstance($instance)
-    {
-    }
+    protected $jaxon;
 
     /**
-     * Callback before processing a Jaxon request.
+     * The constructor.
      *
-     * @param object            $instance               The Jaxon class instance to call
-     * @param string            $method                 The Jaxon class method to call
-     * @param boolean           $bEndRequest            Whether to end the request or not
-     *
-     * @return void
+     * @param Jaxon     $jaxon      The Jaxon plugin
      */
-    public function beforeRequest($instance, $method, &$bEndRequest)
+    public function __construct(Jaxon $jaxon)
     {
-    }
-
-    /**
-     * Callback after processing a Jaxon request.
-     *
-     * @param object            $instance               The Jaxon class instance called
-     * @param string            $method                 The Jaxon class method called
-     *
-     * @return void
-     */
-    public function afterRequest($instance, $method)
-    {
+        $this->jaxon = $jaxon;
     }
 
     /**
@@ -53,22 +31,37 @@ class JaxonController extends Controller
      */
     public function indexAction()
     {
-        // Process the Jaxon request
-        $jaxon = $this->get('jaxon.ajax');
+        $this->jaxon->callback()->before(function ($target, &$bEndRequest) {
+            /*
+            if($target->isFunction())
+            {
+                $function = $target->getFunctionName();
+            }
+            elseif($target->isClass())
+            {
+                $class = $target->getClassName();
+                $method = $target->getMethodName();
+                // $instance = $this->jaxon->instance($class);
+            }
+            */
+        });
+        $this->jaxon->callback()->after(function ($target, $bEndRequest) {
+            /*
+            if($target->isFunction())
+            {
+                $function = $target->getFunctionName();
+            }
+            elseif($target->isClass())
+            {
+                $class = $target->getClassName();
+                $method = $target->getMethodName();
+            }
+            */
+        });
 
-        $jaxon->onInit(function ($instance) {
-            $this->initInstance($instance);
-        });
-        $jaxon->onBefore(function ($instance, $method, &$bEndRequest) {
-            $this->beforeRequest($instance, $method, $bEndRequest);
-        });
-        $jaxon->onAfter(function ($instance, $method) {
-            $this->afterRequest($instance, $method);
-        });
-
-        if($jaxon->canProcessRequest())
+        if($this->jaxon->canProcessRequest())
         {
-            $jaxon->processRequest();
+            return $this->jaxon->processRequest();
         }
     }
 }
