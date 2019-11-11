@@ -67,23 +67,32 @@ class Jaxon
             // ->uri($sUri)
             ->js(!$this->debug, $sJsUrl, $sJsDir, !$this->debug)
             ->run(false);
+
+        // Prevent the Jaxon library from sending the response or exiting
+        $jaxon->setOption('core.response.send', false);
+        $jaxon->setOption('core.process.exit', false);
     }
 
     /**
-     * Wrap the Jaxon response into an HTTP response.
+     * Process an incoming Jaxon request, and return the response.
      *
-     * @param  $code        The HTTP Response code
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return mixed
      */
-    public function httpResponse($code = '200')
+    public function processRequest()
     {
+        $jaxon = jaxon();
+        // Process the jaxon request
+        $jaxon->processRequest();
+        // Get the reponse to the request
+        $jaxonResponse = $jaxon->di()->getResponseManager()->getResponse();
+
         // Create and return a Symfony HTTP response
+        $code = '200';
         $response = new HttpResponse();
-        $response->headers->set('Content-Type', $this->ajaxResponse()->getContentType());
-        $response->setCharset($this->ajaxResponse()->getCharacterEncoding());
+        $response->headers->set('Content-Type', $jaxonResponse->getContentType());
+        $response->setCharset($jaxonResponse->getCharacterEncoding());
         $response->setStatusCode($code);
-        $response->setContent($this->ajaxResponse()->getOutput());
+        $response->setContent($jaxonResponse->getOutput());
         // prints the HTTP headers followed by the content
         $response->send();
     }

@@ -61,8 +61,7 @@ class JaxonController extends Controller
 
         if($this->jaxon->canProcessRequest())
         {
-            $this->jaxon->processRequest();
-            return $this->jaxon->httpResponse();
+            return $this->jaxon->processRequest();
         }
     }
 }
