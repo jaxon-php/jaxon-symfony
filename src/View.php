@@ -42,7 +42,7 @@ class View implements ViewContract
     public function render(Store $store)
     {
         $sExtension = '';
-        if(key_exists($store->getNamespace(), $this->aNamespaces))
+        if(array_key_exists($store->getNamespace(), $this->namespaces))
         {
             $sExtension = $this->aNamespaces[$store->getNamespace()]['extension'];
         }
