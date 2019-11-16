@@ -29,7 +29,7 @@ class JaxonController extends Controller
      *
      * @return void
      */
-    public function indexAction()
+    public function index()
     {
         $this->jaxon->callback()->before(function ($target, &$bEndRequest) {
             /*

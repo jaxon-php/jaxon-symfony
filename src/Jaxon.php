@@ -49,6 +49,9 @@ class Jaxon
             return new Session();
         });
 
+        // Set the framework service container wrapper
+        // $di->setAppContainer(new Container($kernel->getContainer()));
+
         $this->bootstrap()
             ->lib($config['lib'])
             ->app($config['app'])
