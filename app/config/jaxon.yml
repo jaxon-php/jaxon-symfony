@@ -2,7 +2,7 @@ parameters:
   jaxon:
     app:
       directories:
-        '%kernel.root_dir%/../jaxon/Classes':
+        '%kernel.project_dir%/jaxon/App':
           namespace: \Jaxon\App
           # separator: '' # '.' or '_'
           # protected: []

@@ -5,12 +5,30 @@ namespace Jaxon\AjaxBundle;
 use Jaxon\Utils\View\Store;
 use Jaxon\Contracts\View as ViewContract;
 
+use Twig\Environment;
+
 class View implements ViewContract
 {
+    /**
+     * The Twig template renderer
+     *
+     * @var Environment
+     */
     protected $xRenderer;
-    protected $aNamespaces = array();
 
-    public function __construct($xRenderer)
+    /**
+     * The view namespaces
+     *
+     * @var array
+     */
+    protected $aNamespaces = [];
+
+    /**
+     * The constructor
+     *
+     * @param Environment $xRenderer
+     */
+    public function __construct(Environment $xRenderer)
     {
         $this->xRenderer = $xRenderer;
     }
@@ -26,10 +44,10 @@ class View implements ViewContract
      */
     public function addNamespace($sNamespace, $sDirectory, $sExtension = '')
     {
-        $this->aNamespaces[$sNamespace] = array(
+        $this->aNamespaces[$sNamespace] = [
             'directory' => $sDirectory,
             'extension' => $sExtension,
-        );
+        ];
     }
 
     /**
