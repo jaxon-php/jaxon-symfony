@@ -6,7 +6,7 @@ This package integrates the [Jaxon library](https://github.com/jaxon-php/jaxon-c
 Features
 --------
 
-- Automatically register Jaxon classes from a preset directory.
+- Automatically register Jaxon classes from a pre-configured directory.
 - Read Jaxon options from a config file.
 
 Installation
@@ -64,7 +64,7 @@ There's a single entry in the `directories` array with the following values.
 
 | Name | Default value | Description |
 |------|---------------|-------------|
-| directory | jaxon/Classes | The directory of the Jaxon classes |
+| directory | jaxon/App | The directory of the Jaxon classes |
 | namespace | \Jaxon\App  | The namespace of the Jaxon classes |
 | separator | .           | The separator in Jaxon class names |
 | protected | empty array | Prevent Jaxon from exporting some methods |
@@ -87,7 +87,7 @@ class DemoController extends Controller
     {
         // Register the Jaxon classes
         $jaxon = $this->get('jaxon.ajax');
-        $jaxon->register();
+
         // Print the page
         return $this->render('demo/index.html.twig',
             'jaxon_css' => $jaxon->css(),
