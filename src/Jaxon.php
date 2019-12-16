@@ -52,6 +52,9 @@ class Jaxon
             return new Session();
         });
 
+        // Set the framework service container wrapper
+        $di->setAppContainer(new Container($kernel->getContainer()));
+
         // Set the logger
         $this->setLogger($logger);
 

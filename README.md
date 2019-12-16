@@ -83,7 +83,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DemoController extends Controller
 {
-    public function indexAction(Request $request)
+    public function index(Request $request)
     {
         // Register the Jaxon classes
         $jaxon = $this->get('jaxon.ajax');
