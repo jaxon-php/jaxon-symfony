@@ -3,6 +3,7 @@ services:
         class: Jaxon\AjaxBundle\Jaxon
         arguments:
             - "@kernel"
+            - "@logger"
             - "@twig"
             - "%jaxon%"
     jaxon.controller:

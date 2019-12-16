@@ -4,7 +4,8 @@ namespace Jaxon\AjaxBundle;
 
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment as TemplateEngine;
+use Psr\Log\LoggerInterface;
 
 class Jaxon
 {
@@ -21,10 +22,12 @@ class Jaxon
      * Create a new Jaxon instance.
      *
      * @param KernelInterface       $kernel
-     * @param EngineInterface       $template
+     * @param LoggerInterface       $logger
+     * @param TemplateEngine        $template
      * @param array                 $config
      */
-    public function __construct($kernel, $template, $config)
+    public function __construct(KernelInterface $kernel,
+        LoggerInterface $logger, TemplateEngine $template, array $config)
     {
         // The application URL
         $sJsUrl = '//' . $_SERVER['SERVER_NAME'] . '/jaxon/js';
@@ -40,14 +43,17 @@ class Jaxon
         // Set the default view namespace
         $viewManager->addNamespace('default', '', '.html.twig', 'twig');
         // Add the view renderer
-        $viewManager->addRenderer('twig', function () use ($template) {
+        $viewManager->addRenderer('twig', function() use ($template) {
             return new View($template);
         });
 
         // Set the session manager
-        $di->setSessionManager(function () {
+        $di->setSessionManager(function() {
             return new Session();
         });
+
+        // Set the logger
+        $this->setLogger($logger);
 
         $this->bootstrap()
             ->lib($config['lib'])
