@@ -15,7 +15,7 @@ Installation
 Add the following lines in the `composer.json` file, and run the `composer update` command.
 ```json
 "require": {
-    "jaxon-php/jaxon-symfony": "~3.0"
+    "jaxon-php/jaxon-symfony": "~3.1"
 }
 ```
 
@@ -103,9 +103,9 @@ Before it prints the page, the controller calls the `$jaxon->css()`, `$jaxon->js
 ### The Jaxon classes
 
 The Jaxon classes can inherit from `\Jaxon\CallableClass`.
-By default, they are located in the `jaxon/Classes` dir of the Symfony application, and the associated namespace is `\Jaxon\App`.
+By default, they are located in the `jaxon/App` dir of the Symfony application, and the associated namespace is `\Jaxon\App`.
 
-This is a simple example of a Jaxon class, defined in the `jaxon/Classes/HelloWorld.php` file.
+This is a simple example of a Jaxon class, defined in the `jaxon/App/HelloWorld.php` file.
 
 ```php
 namespace Jaxon\App;

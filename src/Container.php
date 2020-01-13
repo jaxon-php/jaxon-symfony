@@ -12,22 +12,22 @@
 
 namespace Jaxon\AjaxBundle;
 
-use Jaxon\Contracts\Container as ContainerContract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
 
-class Container implements ContainerContract
+class Container implements ContainerInterface
 {
     /**
-     * @var ContainerInterface      $container
+     * @var SymfonyContainerInterface      $container
      */
     protected $container;
 
     /**
      * The constructor
      *
-     * @param ContainerInterface    $container
+     * @param SymfonyContainerInterface    $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(SymfonyContainerInterface $container)
     {
         $this->container = $container;
     }

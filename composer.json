@@ -13,7 +13,8 @@
         "source": "https://github.com/jaxon-php/jaxon-symfony"
     },
     "require": {
-        "jaxon-php/jaxon-core": "^3.1"
+        "psr/container": ">=1.0.0",
+        "jaxon-php/jaxon-core": "^3.2"
     },
     "provide": {
         "jaxon-php/jaxon-view-twig": "~3.0"
