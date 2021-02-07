@@ -1,0 +1,12 @@
+services:
+    _defaults: { public: true }
+
+    Jaxon\AjaxBundle\Jaxon:
+        arguments:
+            - "@kernel"
+            - "@logger"
+            - "@twig"
+            - "%jaxon%"
+    Jaxon\AjaxBundle\Controller\JaxonController:
+        arguments:
+            - "@Jaxon\\AjaxBundle\\Jaxon"
