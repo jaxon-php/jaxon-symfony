@@ -15,7 +15,7 @@
     "require": {
         "psr/container": ">=1.0.0",
         "jaxon-php/jaxon-core": "^3.2",
-        "symfony/symfony": "4.*|5.*"
+        "symfony/framework-bundle": "4.*|5.*"
     },
     "provide": {
         "jaxon-php/jaxon-view-twig": "~3.0"
