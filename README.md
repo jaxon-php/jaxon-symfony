@@ -15,40 +15,34 @@ Installation
 Add the following lines in the `composer.json` file, and run the `composer update` command.
 ```json
 "require": {
-    "jaxon-php/jaxon-symfony": "~3.1"
+    "jaxon-php/jaxon-symfony": "~3.2"
 }
 ```
 
-Declare the Jaxon bundle in the `app/AppKernel.php` file.
-```php
-$bundles = array(
-    ...
-    new Jaxon\AjaxBundle\JaxonAjaxBundle(),
-);
-```
-
-Setup the default routing for Jaxon request by adding the following line in the `app/config/routing.yml` config file.
+Setup the default routing for Jaxon request by adding the following line in the `config/routes.yml` config file.
 ```yaml
-jaxon_ajax:
-    resource: "@JaxonAjaxBundle/Resources/config/routing.yml"
-    prefix:   /
+jaxon:
+    resource: "@JaxonAjaxBundle/Resources/config/routes.yaml"
 ```
 
-Import the service definition and configuration file of the Jaxon bundle in the `app/config/config.yml` config file.
+Import the service definition and configuration file of the Jaxon bundle in the `config/services.yml` config file.
 ```yaml
 imports:
     ...
-    - { resource: jaxon.yml }
-    - { resource: "@JaxonAjaxBundle/Resources/config/services.yml" }
+    - { resource: jaxon.yaml }
+    - { resource: "@JaxonAjaxBundle/Resources/config/services.yaml" }
 ```
 
-Create and edit the `app/config/jaxon.yml` file to suit the needs of your application.
-A sample config file is available online at [the examples repo](https://github.com/jaxon-php/jaxon-examples/blob/master/frameworks/symfony/app/config/jaxon.yml).
+Create and edit the `config/jaxon.yaml` file to suit the needs of your application.
+A sample config file is available [in this repo](https://github.com/jaxon-php/jaxon-symfony/blob/master/config/jaxon.yaml).
+
+This config file by default registers Jaxon classes in the `jaxon/App` directory with the `\Jaxon\App` namespace.
+Make sure this directory exists, even if it is empty.
 
 Configuration
 ------------
 
-The settings in the `app/config/jaxon.yml` config file are separated into two sections.
+The settings in the `config/jaxon.yml` config file are separated into two sections.
 The options in the `lib` section are those of the Jaxon core library, while the options in the `app` sections are those of the Symfony application.
 
 The following options can be defined in the `app` section of the config file.
@@ -75,24 +69,24 @@ Usage
 
 This is an example of a Symfony controller using the Jaxon library.
 ```php
-namespace AppBundle\Controller;
+namespace App\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class DemoController extends Controller
+use Jaxon\AjaxBundle\Jaxon;
+
+class DemoController extends AbstractController
 {
-    public function index(Request $request)
+    /**
+     * @Route("/", name="home")
+     */
+    public function index(Jaxon $jaxon)
     {
-        // Register the Jaxon classes
-        $jaxon = $this->get('jaxon.ajax');
-
-        // Print the page
-        return $this->render('demo/index.html.twig',
-            'jaxon_css' => $jaxon->css(),
-            'jaxon_js' => $jaxon->js(),
-            'jaxon_script' => $jaxon->script()
+        return $this->render('demo/index.html.twig', [
+            'jaxonCss' => $jaxon->css(),
+            'jaxonJs' => $jaxon->js(),
+            'jaxonScript' => $jaxon->script(),
         ]);
     }
 }
@@ -122,8 +116,8 @@ class HelloWorld extends \Jaxon\CallableClass
 
 ### Request processing
 
-By default, the Jaxon request are handled by the controller in the `src/Controllers/JaxonController.php` file.
-The `/jaxon` route is defined in the `src/Resources/config/routing.yml` file, and linked to the `JaxonController::indexAction()` method.
+By default, the Jaxon requests are handled by the controller in the `src/Controller/JaxonController.php` file.
+The `/jaxon` route is defined in the `src/Resources/config/routes.yaml` file, and linked to the `JaxonController::index()` method.
 
 Contribute
 ----------
