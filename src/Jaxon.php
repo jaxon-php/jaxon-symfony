@@ -30,9 +30,9 @@ class Jaxon
         LoggerInterface $logger, TemplateEngine $template, array $config)
     {
         // The application URL
-        $sJsUrl = '//' . $_SERVER['SERVER_NAME'] . '/jaxon/js';
+        $sJsUrl = '/jaxon/js';
         // The application web dir
-        $sJsDir = $_SERVER['DOCUMENT_ROOT'] . '/jaxon/js';
+        $sJsDir = \rtrim($kernel->getProjectDir(), '/') . '/public/jaxon/js';
         // Export and minify options
         $bExportJs = $bMinifyJs = !$kernel->isDebug();
 
