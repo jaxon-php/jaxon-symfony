@@ -53,6 +53,6 @@ class Container implements ContainerInterface
      */
     public function get($sClass)
     {
-        return $this->container->get($sClass, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        return $this->container->get($sClass, SymfonyContainerInterface::NULL_ON_INVALID_REFERENCE);
     }
 }
