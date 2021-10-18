@@ -4,6 +4,7 @@ namespace Jaxon\AjaxBundle;
 
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment as TemplateEngine;
 use Psr\Log\LoggerInterface;
 
@@ -12,11 +13,11 @@ class Jaxon
     use \Jaxon\Features\App;
 
     /**
-     * The template engine
+     * The Symfony service locator id
      *
-     * @var EngineInterface
+     * @var string
      */
-    // protected $template;
+    protected $locatorId = 'jaxon.service_locator';
 
     /**
      * Create a new Jaxon instance.
@@ -56,7 +57,11 @@ class Jaxon
         });
 
         // Set the framework service container wrapper
-        $di->setAppContainer(new Container($kernel->getContainer()));
+        $container = $kernel->getContainer();
+        $locator = $container->get($this->locatorId, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        // Cannot pass a null parameter to the Container constructor,
+        // because PHP versions prior to 7.1 do not support nullable parameters.
+        $di->setAppContainer(($locator) ? new Container($container, $locator) : new Container($container));
 
         // Set the logger
         $this->setLogger($logger);

@@ -1,5 +1,11 @@
 <?php
 
+namespace Jaxon\AjaxBundle;
+
+use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ServiceLocator;
+
 /**
  * Container.php - Dependency injection gateway
  *
@@ -10,49 +16,55 @@
  * @link https://github.com/jaxon-php/jaxon-core
  */
 
-namespace Jaxon\AjaxBundle;
-
-use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
-
-class Container implements ContainerInterface
+class Container implements PsrContainerInterface
 {
     /**
-     * @var SymfonyContainerInterface      $container
+     * @var ContainerInterface
      */
     protected $container;
 
     /**
+     * @var ServiceLocator
+     */
+    protected $locator;
+
+    /**
      * The constructor
      *
-     * @param SymfonyContainerInterface    $container
+     * @param ContainerInterface $container
+     * @param ServiceLocator $locator
      */
-    public function __construct(SymfonyContainerInterface $container)
+    public function __construct(ContainerInterface $container, ServiceLocator $locator = null)
     {
         $this->container = $container;
+        $this->locator = $locator;
     }
 
     /**
      * Check if a given class is defined in the container
      *
-     * @param string                $sClass             A full class name
+     * @param string    $sClass     A full class name
      *
      * @return bool
      */
     public function has($sClass)
     {
-        return $this->container->has($sClass);
+        return ($this->locator !== null && $this->locator->has($sClass)) || $this->container->has($sClass);
     }
 
     /**
      * Get a class instance
      *
-     * @param string                $sClass             A full class name
+     * @param string    $sClass     A full class name
      *
-     * @return mixed                The class instance
+     * @return mixed
      */
     public function get($sClass)
     {
-        return $this->container->get($sClass, SymfonyContainerInterface::NULL_ON_INVALID_REFERENCE);
+        if($this->locator !== null && $this->locator->has($sClass))
+        {
+            return $this->locator->get($sClass);
+        }
+        return $this->container->get($sClass, ContainerInterface::NULL_ON_INVALID_REFERENCE);
     }
 }

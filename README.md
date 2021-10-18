@@ -15,7 +15,7 @@ Installation
 Add the following lines in the `composer.json` file, and run the `composer update` command.
 ```json
 "require": {
-    "jaxon-php/jaxon-symfony": "~3.2"
+    "jaxon-php/jaxon-symfony": "~3.3"
 }
 ```
 
@@ -118,6 +118,29 @@ class HelloWorld extends \Jaxon\CallableClass
 
 By default, the Jaxon requests are handled by the controller in the `src/Controller/JaxonController.php` file.
 The `/jaxon` route is defined in the `src/Resources/config/routes.yaml` file, and linked to the `JaxonController::index()` method.
+
+A route to a custom controller can be used, if for example [event handlers](https://www.jaxon-php.org/docs/v3x/requests/callbacks.html) needs to be defined.
+
+### Dependency injection
+
+Services in Symfony can be declared as public or private, and [injected in Jaxon classes](https://www.jaxon-php.org/docs/v3x/advanced/dependency-injection.html).
+
+Since Jaxon uses a container to fetch to the Symfony services that are injected in his classes, by default it will be able to get access only to services declared as public.
+
+Starting from version 3.3.0, a service locator can be defined for Jaxon in the `config/services.yaml` file, in order to provide access to private services.
+
+```yaml
+    jaxon.service_locator:
+        public: true
+        class: Symfony\Component\DependencyInjection\ServiceLocator
+        tags: ['container.service_locator']
+        arguments:
+            -
+                Twig\Environment: '@twig'
+```
+
+The service locator must be declared as public, and take all the services that can be passed to Jaxon classes as arguments.
+See the [Symfony service locators documentation](https://symfony.com/doc/4.4/service_container/service_subscribers_locators.html).
 
 Contribute
 ----------
