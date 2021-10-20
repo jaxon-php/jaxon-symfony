@@ -1,12 +1,15 @@
 services:
     _defaults: { public: true }
 
+    jaxon.ajax.utils:
+        class: Jaxon\AjaxBundle\Utils
     Jaxon\AjaxBundle\Jaxon:
         arguments:
-            - "@kernel"
-            - "@logger"
-            - "@twig"
-            - "%jaxon%"
+            - '@kernel'
+            - '@logger'
+            - '@twig'
+            - '@=service(service("jaxon.ajax.utils").getSessionService())'
+            - '%jaxon%'
     Jaxon\AjaxBundle\Controller\JaxonController:
         arguments:
-            - "@Jaxon\\AjaxBundle\\Jaxon"
+            - '@Jaxon\AjaxBundle\Jaxon'

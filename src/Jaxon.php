@@ -5,6 +5,7 @@ namespace Jaxon\AjaxBundle;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig\Environment as TemplateEngine;
 use Psr\Log\LoggerInterface;
 
@@ -25,10 +26,11 @@ class Jaxon
      * @param KernelInterface       $kernel
      * @param LoggerInterface       $logger
      * @param TemplateEngine        $template
+     * @param mixed                 $session
      * @param array                 $config
      */
-    public function __construct(KernelInterface $kernel,
-        LoggerInterface $logger, TemplateEngine $template, array $config)
+    public function __construct(KernelInterface $kernel, LoggerInterface $logger,
+        TemplateEngine $template, $session, array $config)
     {
         // The application URL
         $sJsUrl = \array_key_exists('SERVER_NAME', $_SERVER) ?
@@ -40,20 +42,20 @@ class Jaxon
         // Export and minify options
         $bExportJs = $bMinifyJs = !$kernel->isDebug();
 
-        $jaxon = jaxon();
+        $jaxon = \jaxon();
         $di = $jaxon->di();
 
         $viewManager = $di->getViewManager();
         // Set the default view namespace
         $viewManager->addNamespace('default', '', '.html.twig', 'twig');
         // Add the view renderer
-        $viewManager->addRenderer('twig', function() use ($template) {
+        $viewManager->addRenderer('twig', function() use($template) {
             return new View($template);
         });
 
         // Set the session manager
-        $di->setSessionManager(function() {
-            return new Session();
+        $di->setSessionManager(function() use($session) {
+            return new Session(\is_a($session, SessionInterface::class) ? $session : $session->getSession());
         });
 
         // Set the framework service container wrapper
@@ -87,7 +89,7 @@ class Jaxon
      */
     public function httpResponse($code = '200')
     {
-        $jaxon = jaxon();
+        $jaxon = \jaxon();
         // Get the reponse to the request
         $jaxonResponse = $jaxon->di()->getResponseManager()->getResponse();
         if(!$jaxonResponse)
@@ -112,7 +114,7 @@ class Jaxon
     public function processRequest()
     {
         // Process the jaxon request
-        jaxon()->processRequest();
+        \jaxon()->processRequest();
 
         // Return the reponse to the request
         return $this->httpResponse();

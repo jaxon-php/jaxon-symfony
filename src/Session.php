@@ -3,20 +3,19 @@
 namespace Jaxon\AjaxBundle;
 
 use Jaxon\Contracts\Session as SessionContract;
-use Symfony\Component\HttpFoundation\Session\Session as SessionManager;
 
 class Session implements SessionContract
 {
     /**
      * The Symfony session manager
      *
-     * @var object
+     * @var mixed
      */
     protected $xSession = null;
 
-    public function __construct()
+    public function __construct($session)
     {
-        $this->xSession = new SessionManager();
+        $this->xSession = $session;
     }
 
     /**
