@@ -34,7 +34,7 @@ class Container implements PsrContainerInterface
      * @param ContainerInterface $container
      * @param ServiceLocator $locator
      */
-    public function __construct(ContainerInterface $container, ServiceLocator $locator = null)
+    public function __construct(ContainerInterface $container, ?ServiceLocator $locator = null)
     {
         $this->container = $container;
         $this->locator = $locator;

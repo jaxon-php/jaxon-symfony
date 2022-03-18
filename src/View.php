@@ -7,6 +7,8 @@ use Jaxon\Contracts\View as ViewContract;
 
 use Twig\Environment;
 
+use function trim;
+
 class View implements ViewContract
 {
     /**
@@ -60,7 +62,7 @@ class View implements ViewContract
     public function render(Store $store)
     {
         $sExtension = '';
-        if(array_key_exists($store->getNamespace(), $this->aNamespaces))
+        if(isset($this->aNamespaces[$store->getNamespace()]))
         {
             $sExtension = $this->aNamespaces[$store->getNamespace()]['extension'];
         }

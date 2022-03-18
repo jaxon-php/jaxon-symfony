@@ -9,9 +9,13 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig\Environment as TemplateEngine;
 use Psr\Log\LoggerInterface;
 
+use function rtrim;
+use function is_a;
+use function jaxon;
+
 class Jaxon
 {
-    use \Jaxon\Features\App;
+    use \Jaxon\App\AppTrait;
 
     /**
      * The Symfony service locator id
@@ -27,96 +31,64 @@ class Jaxon
      * @param LoggerInterface       $logger
      * @param TemplateEngine        $template
      * @param mixed                 $session
-     * @param array                 $config
+     * @param array                 $aOptions
      */
     public function __construct(KernelInterface $kernel, LoggerInterface $logger,
-        TemplateEngine $template, $session, array $config)
+        TemplateEngine $template, $session, array $aOptions)
     {
-        // The application URL
-        $sJsUrl = \array_key_exists('SERVER_NAME', $_SERVER) ?
-            '//' . $_SERVER['SERVER_NAME'] . '/jaxon/js' : '/jaxon/js';
-        // The application web dir
-        $sJsDir = \array_key_exists('DOCUMENT_ROOT', $_SERVER) ?
-            '//' . $_SERVER['DOCUMENT_ROOT'] . '/jaxon/js' :
-            \rtrim($kernel->getProjectDir(), '/') . '/public/jaxon/js';
-        // Export and minify options
-        $bExportJs = $bMinifyJs = !$kernel->isDebug();
+        $this->jaxon = jaxon();
 
-        $jaxon = \jaxon();
-        $di = $jaxon->di();
-
-        $viewManager = $di->getViewManager();
         // Set the default view namespace
-        $viewManager->addNamespace('default', '', '.html.twig', 'twig');
+        $this->addViewNamespace('default', '', '.html.twig', 'twig');
         // Add the view renderer
-        $viewManager->addRenderer('twig', function() use($template) {
+        $this->addViewRenderer('twig', function() use($template) {
             return new View($template);
         });
-
         // Set the session manager
-        $di->setSessionManager(function() use($session) {
-            return new Session(\is_a($session, SessionInterface::class) ? $session : $session->getSession());
+        $this->setSessionManager(function() use($session) {
+            return new Session(is_a($session, SessionInterface::class) ? $session : $session->getSession());
         });
-
         // Set the framework service container wrapper
         $container = $kernel->getContainer();
         $locator = $container->get($this->locatorId, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        // Cannot pass a null parameter to the Container constructor,
-        // because PHP versions prior to 7.1 do not support nullable parameters.
-        $di->setAppContainer(($locator) ? new Container($container, $locator) : new Container($container));
-
+        $this->setAppContainer(new Container($container, $locator));
         // Set the logger
         $this->setLogger($logger);
 
+        // The application URL
+        $sJsUrl = isset($_SERVER['SERVER_NAME']) ?
+            '//' . $_SERVER['SERVER_NAME'] . '/jaxon/js' : '/jaxon/js';
+        // The application web dir
+        $sJsDir = isset($_SERVER['DOCUMENT_ROOT']) ?
+            '//' . $_SERVER['DOCUMENT_ROOT'] . '/jaxon/js' :
+            rtrim($kernel->getProjectDir(), '/') . '/public/jaxon/js';
+        // Export and minify options
+        $bExportJs = $bMinifyJs = !$kernel->isDebug();
+
+        $aLibOptions = $aOptions['lib'] ?? [];
+        $aAppOptions = $aOptions['app'] ?? [];
         $this->bootstrap()
-            ->lib($config['lib'])
-            ->app($config['app'])
+            ->lib($aLibOptions)
+            ->app($aAppOptions)
             // ->uri($sUri)
             ->js($bExportJs, $sJsUrl, $sJsDir, $bMinifyJs)
-            ->run();
-
-        // Prevent the Jaxon library from sending the response or exiting
-        $jaxon->setOption('core.response.send', false);
-        $jaxon->setOption('core.process.exit', false);
+            ->setup();
     }
 
     /**
-     * Get the HTTP response
-     *
-     * @param string    $code       The HTTP response code
-     *
-     * @return mixed
+     * @inheritDoc
      */
-    public function httpResponse($code = '200')
+    public function httpResponse(string $sCode = '200')
     {
-        $jaxon = \jaxon();
         // Get the reponse to the request
-        $jaxonResponse = $jaxon->di()->getResponseManager()->getResponse();
-        if(!$jaxonResponse)
-        {
-            $jaxonResponse = $jaxon->getResponse();
-        }
+        $jaxonResponse = $this->jaxon->getResponse();
 
         // Create and return a Symfony HTTP response
         $httpResponse = new HttpResponse();
         $httpResponse->headers->set('Content-Type', $jaxonResponse->getContentType());
-        $httpResponse->setCharset($jaxonResponse->getCharacterEncoding());
-        $httpResponse->setStatusCode($code);
+        $httpResponse->setCharset($this->jaxon->getCharacterEncoding());
+        $httpResponse->setStatusCode($sCode);
         $httpResponse->setContent($jaxonResponse->getOutput());
         return $httpResponse;
-    }
-
-    /**
-     * Process an incoming Jaxon request, and return the response.
-     *
-     * @return mixed
-     */
-    public function processRequest()
-    {
-        // Process the jaxon request
-        \jaxon()->processRequest();
-
-        // Return the reponse to the request
-        return $this->httpResponse();
     }
 }

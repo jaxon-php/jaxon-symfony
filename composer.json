@@ -14,7 +14,7 @@
     },
     "require": {
         "psr/container": ">=1.0.0",
-        "jaxon-php/jaxon-core": "^3.2",
+        "jaxon-php/jaxon-core": "^4.0",
         "symfony/framework-bundle": ">=4.3|5.*",
         "symfony/expression-language": "*"
     },
