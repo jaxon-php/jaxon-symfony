@@ -86,7 +86,7 @@ class Jaxon
         // Create and return a Symfony HTTP response
         $httpResponse = new HttpResponse();
         $httpResponse->headers->set('Content-Type', $jaxonResponse->getContentType());
-        $httpResponse->setCharset($this->jaxon->getCharacterEncoding());
+        $httpResponse->setCharset($this->getCharacterEncoding());
         $httpResponse->setStatusCode($sCode);
         $httpResponse->setContent($jaxonResponse->getOutput());
         return $httpResponse;
