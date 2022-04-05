@@ -70,8 +70,7 @@ class Jaxon
         $this->bootstrap()
             ->lib($aLibOptions)
             ->app($aAppOptions)
-            // ->uri($sUri)
-            ->js($bExportJs, $sJsUrl, $sJsDir, $bMinifyJs)
+            ->asset($bExportJs, $bMinifyJs, $sJsUrl, $sJsDir)
             ->setup();
     }
 
