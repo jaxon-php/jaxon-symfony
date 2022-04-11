@@ -2,9 +2,9 @@
 
 namespace Jaxon\AjaxBundle;
 
-use Jaxon\Contracts\Session as SessionContract;
+use Jaxon\App\Session\SessionInterface;
 
-class Session implements SessionContract
+class Session implements SessionInterface
 {
     /**
      * The Symfony session manager

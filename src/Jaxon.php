@@ -51,7 +51,7 @@ class Jaxon
         // Set the framework service container wrapper
         $container = $kernel->getContainer();
         $locator = $container->get($this->locatorId, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        $this->setAppContainer(new Container($container, $locator));
+        $this->setContainer(new Container($container, $locator));
         // Set the logger
         $this->setLogger($logger);
 
