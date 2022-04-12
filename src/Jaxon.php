@@ -80,14 +80,14 @@ class Jaxon
     public function httpResponse(string $sCode = '200')
     {
         // Get the reponse to the request
-        $jaxonResponse = $this->jaxon->getResponse();
+        $ajaxResponse = $this->ajaxResponse();
 
         // Create and return a Symfony HTTP response
         $httpResponse = new HttpResponse();
-        $httpResponse->headers->set('Content-Type', $jaxonResponse->getContentType());
+        $httpResponse->headers->set('Content-Type', $ajaxResponse->getContentType());
         $httpResponse->setCharset($this->getCharacterEncoding());
         $httpResponse->setStatusCode($sCode);
-        $httpResponse->setContent($jaxonResponse->getOutput());
+        $httpResponse->setContent($ajaxResponse->getOutput());
         return $httpResponse;
     }
 }
