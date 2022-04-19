@@ -16,36 +16,23 @@ Add the following lines in the `composer.json` file, and run the `composer updat
 
 Or run the `composer require jaxon-php/jaxon-symfony` command.
 
-This package provides an event listener that must be attached to Symfony routes to pages using the Jaxon features.
-
-Add the following settings in the `config/services.yaml` file.
+Add the following settings in the `config/services.yaml` file, to declare the Jaxon service.
 
 ```yaml
 services:
     ...
     jaxon.ajax.utils:
         class: Jaxon\Symfony\Utils
-    Jaxon\Symfony\EventListener\ConfigEventListener:
+    Jaxon\Symfony\Jaxon:
         arguments:
             - '@kernel'
             - '@logger'
             - '@twig'
             - '@=service(service("jaxon.ajax.utils").getSessionService())'
             - '%jaxon%'
-        tags:
-            - { name: kernel.event_listener, event: kernel.controller }
 imports:
     ...
     - { resource: jaxon.yaml }
-```
-
-Then, set the `jaxon` attribute to true on the routes to pages using the Jaxon features.
-
-```yaml
-my_route:
-    resource: ...
-    prefix: ...
-    defaults: { jaxon: true }
 ```
 
 Create and edit the `config/jaxon.yaml` file to suit the needs of your application.
@@ -57,16 +44,17 @@ Make sure this directory exists, even if it is empty.
 The last step is to define a controller action to process Jaxon ajax requests, and insert Jaxon js and css codes in the pages where they are required.
 
 ```php
+use Jaxon\Symfony\Jaxon;
+
 class DemoController extends AbstractController
 {
     /**
      * Process Jaxon ajax requests. This route must be the same that is set in the Jaxon config.
      *
-     * @Route("/ajax", name="jaxon.ajax", defaults={"jaxon": true})
+     * @Route("/ajax", name="jaxon.ajax")
      */
-    public function jaxon()
+    public function jaxon(Jaxon $jaxon)
     {
-        $jaxon = jaxon()->app();
         if(!$jaxon->canProcessRequest())
         {
             // Jaxon failed to find a plugin to process the request 
@@ -80,11 +68,10 @@ class DemoController extends AbstractController
     /**
      * Insert Jaxon js and css codes in the page.
      *
-     * @Route("/", name="homepage", defaults={"jaxon": true})
+     * @Route("/", name="homepage")
      */
-    public function index(Request $request, LoggerInterface $logger)
+    public function index(Jaxon $jaxon)
     {
-        $jaxon = jaxon()->app();
         // Insert Jaxon codes into the page
         return $this->render('demo/index.html.twig', [
             ...

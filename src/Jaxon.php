@@ -61,16 +61,26 @@ class Jaxon implements AppInterface
      * @param mixed $session
      *
      * @param array $aOptions
+     * @throws SetupException
      */
     public function __construct(KernelInterface $kernel, LoggerInterface $logger,
         TemplateEngine $template, $session, array $aOptions)
     {
-        $this->initApp(jaxon()->di());
         $this->kernel = $kernel;
         $this->logger = $logger;
         $this->template = $template;
         $this->session = $session;
         $this->aOptions = $aOptions;
+
+        // Setup the Jaxon library.
+        $di = jaxon()->di();
+        $this->initApp($di);
+        $this->setup('');
+
+        // Register this object into the Jaxon container.
+        $di->set(AppInterface::class, function() {
+            return $this;
+        });
     }
 
     /**
@@ -122,15 +132,13 @@ class Jaxon implements AppInterface
      */
     public function httpResponse(string $sCode = '200')
     {
-        // Get the reponse to the request
-        $ajaxResponse = $this->ajaxResponse();
-
         // Create and return a Symfony HTTP response
         $httpResponse = new HttpResponse();
-        $httpResponse->headers->set('Content-Type', $ajaxResponse->getContentType());
+        $httpResponse->headers->set('Content-Type', $this->getContentType());
         $httpResponse->setCharset($this->getCharacterEncoding());
         $httpResponse->setStatusCode($sCode);
-        $httpResponse->setContent($ajaxResponse->getOutput());
+        $httpResponse->setContent($this->ajaxResponse()->getOutput());
+
         return $httpResponse;
     }
 }
