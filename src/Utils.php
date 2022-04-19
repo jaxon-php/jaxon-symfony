@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\AjaxBundle;
+namespace Jaxon\Symfony;
 
 use Symfony\Component\HttpKernel\Kernel;
 

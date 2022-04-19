@@ -3,41 +3,98 @@ Jaxon Library for Symfony
 
 This package integrates the [Jaxon library](https://github.com/jaxon-php/jaxon-core) into the Symfony framework.
 
-Features
---------
-
-- Automatically register Jaxon classes from a pre-configured directory.
-- Read Jaxon options from a config file.
-
 Installation
 ------------
 
 Add the following lines in the `composer.json` file, and run the `composer update` command.
+
 ```json
 "require": {
-    "jaxon-php/jaxon-symfony": "~3.3"
+    "jaxon-php/jaxon-symfony": "^4.0"
 }
 ```
 
-Setup the default routing for Jaxon request by adding the following line in the `config/routes.yml` config file.
-```yaml
-jaxon:
-    resource: "@JaxonAjaxBundle/Resources/config/routes.yaml"
-```
+Or run the `composer require jaxon-php/jaxon-symfony` command.
 
-Import the service definition and configuration file of the Jaxon bundle in the `config/services.yml` config file.
+This package provides an event listener that must be attached to Symfony routes to pages using the Jaxon features.
+
+Add the following settings in the `config/services.yaml` file.
+
 ```yaml
+services:
+    ...
+    jaxon.ajax.utils:
+        class: Jaxon\Symfony\Utils
+    Jaxon\Symfony\EventListener\ConfigEventListener:
+        arguments:
+            - '@kernel'
+            - '@logger'
+            - '@twig'
+            - '@=service(service("jaxon.ajax.utils").getSessionService())'
+            - '%jaxon%'
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller }
 imports:
     ...
     - { resource: jaxon.yaml }
-    - { resource: "@JaxonAjaxBundle/Resources/config/services.yaml" }
+```
+
+Then, set the `jaxon` attribute to true on the routes to pages using the Jaxon features.
+
+```yaml
+my_route:
+    resource: ...
+    prefix: ...
+    defaults: { jaxon: true }
 ```
 
 Create and edit the `config/jaxon.yaml` file to suit the needs of your application.
 A sample config file is available [in this repo](https://github.com/jaxon-php/jaxon-symfony/blob/master/config/jaxon.yaml).
 
-This config file by default registers Jaxon classes in the `jaxon/App` directory with the `\Jaxon\App` namespace.
+This config file by default registers Jaxon classes in the `jaxon/ajax` directory with the `\Jaxon\Ajax` namespace.
 Make sure this directory exists, even if it is empty.
+
+The last step is to define a controller action to process Jaxon ajax requests, and insert Jaxon js and css codes in the pages where they are required.
+
+```php
+class DemoController extends AbstractController
+{
+    /**
+     * Process Jaxon ajax requests. This route must be the same that is set in the Jaxon config.
+     *
+     * @Route("/ajax", name="jaxon.ajax", defaults={"jaxon": true})
+     */
+    public function jaxon()
+    {
+        $jaxon = jaxon()->app();
+        if(!$jaxon->canProcessRequest())
+        {
+            // Jaxon failed to find a plugin to process the request 
+            return; // Todo: return an error message
+        }
+
+        $jaxon->processRequest();
+        return $jaxon->httpResponse();
+    }
+
+    /**
+     * Insert Jaxon js and css codes in the page.
+     *
+     * @Route("/", name="homepage", defaults={"jaxon": true})
+     */
+    public function index(Request $request, LoggerInterface $logger)
+    {
+        $jaxon = jaxon()->app();
+        // Insert Jaxon codes into the page
+        return $this->render('demo/index.html.twig', [
+            ...
+            'jaxonCss' => $jaxon->css(),
+            'jaxonJs' => $jaxon->js(),
+            'jaxonScript' => $jaxon->script(),
+        ]);
+    }
+}
+```
 
 Configuration
 ------------
@@ -56,53 +113,26 @@ The following options can be defined in the `app` section of the config file.
 By default, the `views` array is empty. Views are rendered from the framework default location.
 There's a single entry in the `directories` array with the following values.
 
-| Name | Default value | Description |
-|------|---------------|-------------|
-| directory | jaxon/App | The directory of the Jaxon classes |
-| namespace | \Jaxon\App  | The namespace of the Jaxon classes |
-| separator | .           | The separator in Jaxon class names |
-| protected | empty array | Prevent Jaxon from exporting some methods |
-| | | |
+| Name | Default value | Description                               |
+|------|---------------|-------------------------------------------|
+| directory | jaxon/ajax    | The directory of the Jaxon classes        |
+| namespace | \Jaxon\Ajax   | The namespace of the Jaxon classes        |
+| separator | .             | The separator in Jaxon js class names     |
+| protected | empty array   | Prevent Jaxon from exporting some methods |
+| |               |                                           |
 
 Usage
 -----
 
-This is an example of a Symfony controller using the Jaxon library.
-```php
-namespace App\Controller;
-
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use Jaxon\AjaxBundle\Jaxon;
-
-class DemoController extends AbstractController
-{
-    /**
-     * @Route("/", name="home")
-     */
-    public function index(Jaxon $jaxon)
-    {
-        return $this->render('demo/index.html.twig', [
-            'jaxonCss' => $jaxon->css(),
-            'jaxonJs' => $jaxon->js(),
-            'jaxonScript' => $jaxon->script(),
-        ]);
-    }
-}
-```
-
-Before it prints the page, the controller calls the `$jaxon->css()`, `$jaxon->js()` and `$jaxon->script()` functions to get the CSS and javascript codes generated by Jaxon, which it inserts into the page.
-
 ### The Jaxon classes
 
 The Jaxon classes can inherit from `\Jaxon\App\CallableClass`.
-By default, they are located in the `jaxon/App` dir of the Symfony application, and the associated namespace is `\Jaxon\App`.
+By default, they are located in the `jaxon/ajax` dir of the Symfony application, and the associated namespace is `\Jaxon\Ajax`.
 
-This is a simple example of a Jaxon class, defined in the `jaxon/App/HelloWorld.php` file.
+This is a simple example of a Jaxon class, defined in the `jaxon/Ajax/HelloWorld.php` file.
 
 ```php
-namespace Jaxon\App;
+namespace Jaxon\Ajax;
 
 class HelloWorld extends \Jaxon\App\CallableClass
 {
@@ -114,22 +144,17 @@ class HelloWorld extends \Jaxon\App\CallableClass
 }
 ```
 
-### Request processing
-
-By default, the Jaxon requests are handled by the controller in the `src/Controller/JaxonController.php` file.
-The `/jaxon` route is defined in the `src/Resources/config/routes.yaml` file, and linked to the `JaxonController::index()` method.
-
-A route to a custom controller can be used, if for example [event handlers](https://www.jaxon-php.org/docs/v3x/requests/callbacks.html) needs to be defined.
-
 ### Dependency injection
 
 Services in Symfony can be declared as public or private, and [injected in Jaxon classes](https://www.jaxon-php.org/docs/v3x/advanced/dependency-injection.html).
 
 Since Jaxon uses a container to fetch to the Symfony services that are injected in his classes, by default it will be able to get access only to services declared as public.
 
-Starting from version 3.3.0, a service locator can be defined for Jaxon in the `config/services.yaml` file, in order to provide access to private services.
+A service locator can be defined for Jaxon in the `config/services.yaml` file, in order to provide access to private services.
 
 ```yaml
+services:
+  ...
     jaxon.service_locator:
         public: true
         class: Symfony\Component\DependencyInjection\ServiceLocator

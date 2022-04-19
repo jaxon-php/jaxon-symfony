@@ -1,4 +1,0 @@
-jaxon_ajax_request:
-    path:     /jaxon
-    controller: Jaxon\AjaxBundle\Controller\JaxonController::index
-    methods: [POST]

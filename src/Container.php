@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\AjaxBundle;
+namespace Jaxon\Symfony;
 
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,7 +32,7 @@ class Container implements PsrContainerInterface
      * The constructor
      *
      * @param ContainerInterface $container
-     * @param ServiceLocator $locator
+     * @param ServiceLocator|null $locator
      */
     public function __construct(ContainerInterface $container, ?ServiceLocator $locator = null)
     {
@@ -47,7 +47,7 @@ class Container implements PsrContainerInterface
      *
      * @return bool
      */
-    public function has($sClass)
+    public function has(string $sClass)
     {
         return ($this->locator !== null && $this->locator->has($sClass)) || $this->container->has($sClass);
     }
@@ -59,7 +59,7 @@ class Container implements PsrContainerInterface
      *
      * @return mixed
      */
-    public function get($sClass)
+    public function get(string $sClass)
     {
         if($this->locator !== null && $this->locator->has($sClass))
         {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\AjaxBundle;
+namespace Jaxon\Symfony;
 
 use Jaxon\App\Session\SessionInterface;
 
@@ -35,7 +35,7 @@ class Session implements SessionInterface
      *
      * @return void
      */
-    public function newId($bDeleteData = false)
+    public function newId(bool $bDeleteData = false)
     {
         $this->xSession->migrate($bDeleteData);
     }
@@ -48,7 +48,7 @@ class Session implements SessionInterface
      *
      * @return void
      */
-    public function set($sKey, $xValue)
+    public function set(string $sKey, $xValue)
     {
         $this->xSession->set($sKey, $xValue);
     }
@@ -60,7 +60,7 @@ class Session implements SessionInterface
      *
      * @return bool             True if the session key exists, else false
      */
-    public function has($sKey): bool
+    public function has(string $sKey): bool
     {
         return $this->xSession->has($sKey);
     }
@@ -73,7 +73,7 @@ class Session implements SessionInterface
      *
      * @return mixed|$xDefault             The data under the session key, or the $xDefault parameter
      */
-    public function get($sKey, $xDefault = null)
+    public function get(string $sKey, $xDefault = null)
     {
         return $this->xSession->get($sKey, $xDefault);
     }
@@ -95,7 +95,7 @@ class Session implements SessionInterface
      *
      * @return void
      */
-    public function delete($sKey)
+    public function delete(string $sKey)
     {
         $this->xSession->remove($sKey);
     }

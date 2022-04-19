@@ -15,7 +15,7 @@
     "require": {
         "psr/container": ">=1.0.0",
         "jaxon-php/jaxon-core": "^4.0",
-        "symfony/framework-bundle": ">=4.3|5.*",
+        "symfony/framework-bundle": "5.*|6.*",
         "symfony/expression-language": "*"
     },
     "provide": {
@@ -23,7 +23,9 @@
     },
     "autoload": {
         "psr-4": {
-            "Jaxon\\AjaxBundle\\": "src/"
+            "Jaxon\\Symfony\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

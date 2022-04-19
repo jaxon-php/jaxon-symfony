@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\AjaxBundle;
+namespace Jaxon\Symfony;
 
 use Jaxon\Utils\View\Store;
 use Jaxon\Contracts\View as ViewContract;
