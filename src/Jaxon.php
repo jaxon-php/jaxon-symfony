@@ -107,7 +107,6 @@ class Jaxon implements AppInterface
         // Export and minify options
         $bExportJs = $bMinifyJs = !$this->kernel->isDebug();
 
-        $this->logger->debug('**********Jaxon options', ['options' => $this->aOptions]);
         $aLibOptions = $this->aOptions['lib'] ?? [];
         $aAppOptions = $this->aOptions['app'] ?? [];
 
