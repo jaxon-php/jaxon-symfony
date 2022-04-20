@@ -2,14 +2,13 @@
 
 namespace Jaxon\Symfony;
 
-use Jaxon\Utils\View\Store;
-use Jaxon\Contracts\View as ViewContract;
-
+use Jaxon\App\View\Store;
+use Jaxon\App\View\ViewInterface;
 use Twig\Environment;
 
 use function trim;
 
-class View implements ViewContract
+class View implements ViewInterface
 {
     /**
      * The Twig template renderer
@@ -44,7 +43,7 @@ class View implements ViewContract
      *
      * @return void
      */
-    public function addNamespace($sNamespace, $sDirectory, $sExtension = '')
+    public function addNamespace(string $sNamespace, string $sDirectory, string $sExtension = '')
     {
         $this->aNamespaces[$sNamespace] = [
             'directory' => $sDirectory,
@@ -59,13 +58,14 @@ class View implements ViewContract
      *
      * @return string        The string representation of the view
      */
-    public function render(Store $store)
+    public function render(Store $store): string
     {
         $sExtension = '';
         if(isset($this->aNamespaces[$store->getNamespace()]))
         {
             $sExtension = $this->aNamespaces[$store->getNamespace()]['extension'];
         }
+
         // Render the template
         return trim($this->xRenderer->render($store->getViewName() . $sExtension, $store->getViewData()), " \t\n");
     }

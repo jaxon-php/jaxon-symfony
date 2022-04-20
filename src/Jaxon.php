@@ -12,9 +12,9 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig\Environment as TemplateEngine;
 use Psr\Log\LoggerInterface;
 
-use function rtrim;
 use function is_a;
 use function jaxon;
+use function rtrim;
 
 class Jaxon implements AppInterface
 {
@@ -89,10 +89,8 @@ class Jaxon implements AppInterface
      */
     public function setup(string $sConfigFile)
     {
-        // Set the default view namespace
-        $this->addViewNamespace('default', '', '.html.twig', 'twig');
         // Add the view renderer
-        $this->addViewRenderer('twig', function() {
+        $this->addViewRenderer('twig', '.html.twig', function() {
             return new View($this->template);
         });
         // Set the session manager
@@ -108,11 +106,9 @@ class Jaxon implements AppInterface
         $this->setLogger($this->logger);
 
         // The application URL
-        $sJsUrl = isset($_SERVER['SERVER_NAME']) ?
-            '//' . $_SERVER['SERVER_NAME'] . '/jaxon/js' : '/jaxon/js';
+        $sJsUrl = isset($_SERVER['SERVER_NAME']) ? '//' . $_SERVER['SERVER_NAME'] . '/jaxon/js' : '/jaxon/js';
         // The application web dir
-        $sJsDir = isset($_SERVER['DOCUMENT_ROOT']) ?
-            '//' . $_SERVER['DOCUMENT_ROOT'] . '/jaxon/js' :
+        $sJsDir = isset($_SERVER['DOCUMENT_ROOT']) ? '//' . $_SERVER['DOCUMENT_ROOT'] . '/jaxon/js' :
             rtrim($this->kernel->getProjectDir(), '/') . '/public/jaxon/js';
         // Export and minify options
         $bExportJs = $bMinifyJs = !$this->kernel->isDebug();
@@ -135,7 +131,6 @@ class Jaxon implements AppInterface
         // Create and return a Symfony HTTP response
         $httpResponse = new HttpResponse();
         $httpResponse->headers->set('Content-Type', $this->getContentType());
-        $httpResponse->setCharset($this->getCharacterEncoding());
         $httpResponse->setStatusCode($sCode);
         $httpResponse->setContent($this->ajaxResponse()->getOutput());
 

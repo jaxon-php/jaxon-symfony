@@ -7,13 +7,12 @@
     ],
     "homepage": "https://github.com/jaxon-php/jaxon-symfony",
     "license": "BSD-3-Clause",
-    "keywords": ["Jaxon", "Xajax", "Ajax", "PHP", "Framework", "Symfony"],
+    "keywords": ["Jaxon", "Ajax", "PHP", "Symfony"],
     "support": {
         "issues": "https://github.com/jaxon-php/jaxon-symfony/issues",
         "source": "https://github.com/jaxon-php/jaxon-symfony"
     },
     "require": {
-        "psr/container": ">=1.0.0",
         "jaxon-php/jaxon-core": "^4.0",
         "symfony/framework-bundle": "5.*|6.*",
         "symfony/expression-language": "*"
