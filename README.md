@@ -1,5 +1,5 @@
-Jaxon Library for Symfony
-=========================
+Jaxon integration for Symfony
+=============================
 
 This package integrates the [Jaxon library](https://github.com/jaxon-php/jaxon-core) into the Symfony framework.
 
@@ -57,7 +57,7 @@ class DemoController extends AbstractController
     {
         if(!$jaxon->canProcessRequest())
         {
-            // Jaxon failed to find a plugin to process the request 
+            // Jaxon failed to find a plugin to process the request
             return; // Todo: return an error message
         }
 
