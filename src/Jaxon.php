@@ -12,8 +12,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig\Environment as TemplateEngine;
 use Psr\Log\LoggerInterface;
 
+use function Jaxon\jaxon;
 use function is_a;
-use function jaxon;
 use function rtrim;
 
 class Jaxon implements AppInterface
