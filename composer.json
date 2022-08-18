@@ -18,7 +18,7 @@
         "symfony/expression-language": "*"
     },
     "provide": {
-        "jaxon-php/jaxon-view-twig": "~3.0"
+        "jaxon-php/jaxon-view-twig": "~4.0"
     },
     "autoload": {
         "psr-4": {
