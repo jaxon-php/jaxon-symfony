@@ -4,69 +4,41 @@ namespace Jaxon\Symfony;
 
 use Jaxon\App\View\Store;
 use Jaxon\App\View\ViewInterface;
-use Twig\Environment;
+use Jaxon\App\View\ViewTrait;
+use Twig\Environment as Twig;
 
 use function trim;
 
 class View implements ViewInterface
 {
-    /**
-     * The Twig template renderer
-     *
-     * @var Environment
-     */
-    protected $xRenderer;
-
-    /**
-     * The view namespaces
-     *
-     * @var array
-     */
-    protected $aNamespaces = [];
+    use ViewTrait;
 
     /**
      * The constructor
      *
-     * @param Environment $xRenderer
+     * @param Twig $xRenderer
      */
-    public function __construct(Environment $xRenderer)
-    {
-        $this->xRenderer = $xRenderer;
-    }
+    public function __construct(protected Twig $xRenderer)
+    {}
 
     /**
-     * Add a namespace to this view renderer
-     *
-     * @param string        $sNamespace         The namespace name
-     * @param string        $sDirectory         The namespace directory
-     * @param string        $sExtension         The extension to append to template names
-     *
-     * @return void
-     */
-    public function addNamespace(string $sNamespace, string $sDirectory, string $sExtension = '')
-    {
-        $this->aNamespaces[$sNamespace] = [
-            'directory' => $sDirectory,
-            'extension' => $sExtension,
-        ];
-    }
-
-    /**
-     * Render a view
-     *
-     * @param Store         $store        A store populated with the view data
-     *
-     * @return string        The string representation of the view
+     * @inheritDoc
      */
     public function render(Store $store): string
     {
-        $sExtension = '';
-        if(isset($this->aNamespaces[$store->getNamespace()]))
+        $sViewName = $store->getViewName();
+        $sNamespace = $store->getNamespace();
+        // For this view renderer, the view name doesn't need to be prepended with the namespace.
+        $nNsLen = strlen($sNamespace) + 2;
+        if(substr($sViewName, 0, $nNsLen) === $sNamespace . '::')
         {
-            $sExtension = $this->aNamespaces[$store->getNamespace()]['extension'];
+            $sViewName = substr($sViewName, $nNsLen);
         }
 
+        // View namespace
+        $this->setCurrentNamespace($sNamespace);
+
         // Render the template
-        return trim($this->xRenderer->render($store->getViewName() . $sExtension, $store->getViewData()), " \t\n");
+        return trim($this->xRenderer->render($sViewName . $this->sExtension, $store->getViewData()), " \t\n");
     }
 }
