@@ -2,8 +2,8 @@
 
 namespace Jaxon\Symfony;
 
+use Jaxon\App\AbstractApp;
 use Jaxon\App\AppInterface;
-use Jaxon\App\Traits\AppTrait;
 use Jaxon\Exception\SetupException;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -12,39 +12,12 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig\Environment as TemplateEngine;
 use Psr\Log\LoggerInterface;
 
-use function Jaxon\jaxon;
 use function is_a;
+use function Jaxon\jaxon;
 use function rtrim;
 
-class Jaxon implements AppInterface
+class Jaxon extends AbstractApp
 {
-    use AppTrait;
-
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var TemplateEngine
-     */
-    private $template;
-
-    /**
-     * @var mixed
-     */
-    private $session;
-
-    /**
-     * @var array
-     */
-    private $aOptions;
-
     /**
      * The Symfony service locator id
      *
@@ -63,22 +36,15 @@ class Jaxon implements AppInterface
      * @param array $aOptions
      * @throws SetupException
      */
-    public function __construct(KernelInterface $kernel, LoggerInterface $logger,
-        TemplateEngine $template, $session, array $aOptions)
+    public function __construct(private KernelInterface $kernel, private LoggerInterface $logger,
+        private TemplateEngine $template, private $session, private array $aOptions)
     {
-        $this->kernel = $kernel;
-        $this->logger = $logger;
-        $this->template = $template;
-        $this->session = $session;
-        $this->aOptions = $aOptions;
-
         // Setup the Jaxon library.
-        $di = jaxon()->di();
-        $this->initApp($di);
+        parent::__construct();
         $this->setup('');
 
         // Register this object into the Jaxon container.
-        $di->set(AppInterface::class, function() {
+        jaxon()->di()->set(AppInterface::class, function() {
             return $this;
         });
     }
