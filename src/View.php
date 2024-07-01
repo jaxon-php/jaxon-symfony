@@ -4,41 +4,52 @@ namespace Jaxon\Symfony;
 
 use Jaxon\App\View\Store;
 use Jaxon\App\View\ViewInterface;
-use Jaxon\App\View\ViewTrait;
-use Twig\Environment as Twig;
+use Twig\Environment as TemplateEngine;
+use Twig\Loader\FilesystemLoader;
 
+use function ltrim;
+use function str_replace;
 use function trim;
 
 class View implements ViewInterface
 {
-    use ViewTrait;
+    /**
+     * @var array
+     */
+    private array $aExtensions = [];
 
     /**
      * The constructor
      *
-     * @param Twig $xRenderer
+     * @param TemplateEngine $xEngine
      */
-    public function __construct(protected Twig $xRenderer)
+    public function __construct(private TemplateEngine $xEngine, private FilesystemLoader $xLoader)
     {}
+
+    /**
+     * @inheritDoc
+     */
+    public function addNamespace(string $sNamespace, string $sDirectory, string $sExtension = '')
+    {
+        $this->aExtensions[$sNamespace] = '.' . ltrim($sExtension, '.');
+        $this->xLoader->addPath($sDirectory, $sNamespace);
+    }
 
     /**
      * @inheritDoc
      */
     public function render(Store $store): string
     {
-        $sViewName = $store->getViewName();
         $sNamespace = $store->getNamespace();
-        // For this view renderer, the view name doesn't need to be prepended with the namespace.
-        $nNsLen = strlen($sNamespace) + 2;
-        if(substr($sViewName, 0, $nNsLen) === $sNamespace . '::')
+        $sViewName = !$sNamespace || $sNamespace === 'twig' ?
+            $store->getViewName() : '@' . $sNamespace . '/' . $store->getViewName();
+        $sViewName = str_replace('.', '/', $sViewName);
+        if(isset($this->aExtensions[$sNamespace]))
         {
-            $sViewName = substr($sViewName, $nNsLen);
+            $sViewName .= $this->aExtensions[$sNamespace];
         }
 
-        // View namespace
-        $this->setCurrentNamespace($sNamespace);
-
         // Render the template
-        return trim($this->xRenderer->render($sViewName . $this->sExtension, $store->getViewData()), " \t\n");
+        return trim($this->xEngine->render($sViewName, $store->getViewData()), " \t\n");
     }
 }

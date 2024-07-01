@@ -5,15 +5,25 @@ namespace Jaxon\Symfony;
 use Jaxon\App\AbstractApp;
 use Jaxon\App\AppInterface;
 use Jaxon\Exception\SetupException;
+use Jaxon\Script\JsExpr;
+use Jaxon\Script\JxnCall;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig\Environment as TemplateEngine;
-use Psr\Log\LoggerInterface;
+use Twig\Loader\FilesystemLoader;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 use function is_a;
+use function Jaxon\attr;
 use function Jaxon\jaxon;
+use function Jaxon\jq;
+use function Jaxon\js;
+use function Jaxon\pm;
+use function Jaxon\rq;
 use function rtrim;
 
 class Jaxon extends AbstractApp
@@ -31,17 +41,34 @@ class Jaxon extends AbstractApp
      * @param KernelInterface $kernel
      * @param LoggerInterface $logger
      * @param TemplateEngine $template
+     * @param FilesystemLoader $loader
      * @param mixed $session
+     * @param array $aOptions
      *
      * @param array $aOptions
      * @throws SetupException
      */
     public function __construct(private KernelInterface $kernel, private LoggerInterface $logger,
-        private TemplateEngine $template, private $session, private array $aOptions)
+        private TemplateEngine $template, private FilesystemLoader $loader, private $session,
+        private array $aOptions)
     {
         // Setup the Jaxon library.
         parent::__construct();
         $this->setup('');
+
+        // Filters for custom Jaxon attributes
+        $template->addFilter(new TwigFilter('jxnFunc',
+            fn(JsExpr $xJsExpr) => attr()->func($xJsExpr), ['is_safe' => ['html']]));
+        $template->addFilter(new TwigFilter('jxnShow',
+            fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
+        $template->addFilter(new TwigFilter('jxnHtml',
+            fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
+
+        // Functions for custom Jaxon attributes
+        $template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
+        $template->addFunction(new TwigFunction('js', fn(...$aParams) => js(...$aParams)));
+        $template->addFunction(new TwigFunction('pm', fn(...$aParams) => pm(...$aParams)));
+        $template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
 
         // Register this object into the Jaxon container.
         jaxon()->di()->set(AppInterface::class, function() {
@@ -57,7 +84,7 @@ class Jaxon extends AbstractApp
     {
         // Add the view renderer
         $this->addViewRenderer('twig', '.html.twig', function() {
-            return new View($this->template);
+            return new View($this->template, $this->loader);
         });
         // Set the session manager
         $this->setSessionManager(function() {
