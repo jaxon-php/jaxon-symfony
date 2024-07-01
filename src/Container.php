@@ -1,13 +1,7 @@
 <?php
 
-namespace Jaxon\Symfony;
-
-use Psr\Container\ContainerInterface as PsrContainerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\ServiceLocator;
-
 /**
- * Container.php - Dependency injection gateway
+ * Container.php
  *
  * @package jaxon-core
  * @author Thierry Feuzeu <thierry.feuzeu@gmail.com>
@@ -15,6 +9,12 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD 3-Clause License
  * @link https://github.com/jaxon-php/jaxon-core
  */
+
+namespace Jaxon\Symfony;
+
+use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class Container implements PsrContainerInterface
 {

@@ -10,36 +10,34 @@ Add the following lines in the `composer.json` file, and run the `composer updat
 
 ```json
 "require": {
-    "jaxon-php/jaxon-symfony": "^4.0"
+    "jaxon-php/jaxon-symfony": "v5.x-dev"
 }
 ```
 
-Or run the `composer require jaxon-php/jaxon-symfony` command.
+Or run the `composer require jaxon-php/jaxon-symfony v5.x-dev` command.
 
-Add the following settings in the `config/services.yaml` file, to declare the Jaxon service.
+Declare the Jaxon bundle in the `config/bundle.php` file.
 
-```yaml
-services:
+```php
+return [
     ...
-    jaxon.ajax.utils:
-        class: Jaxon\Symfony\Utils
-    Jaxon\Symfony\Jaxon:
-        arguments:
-            - '@kernel'
-            - '@logger'
-            - '@twig'
-            - '@=service(service("jaxon.ajax.utils").getSessionService())'
-            - '%jaxon%'
-imports:
-    ...
-    - { resource: jaxon.yaml }
+
+    Jaxon\Symfony\JaxonBundle::class => ['all' => true],
+];
 ```
 
-Create and edit the `config/jaxon.yaml` file to suit the needs of your application.
+Create and edit the `packages/config/jaxon.yaml` file to suit the needs of your application.
 A sample config file is available [in this repo](https://github.com/jaxon-php/jaxon-symfony/blob/master/config/jaxon.yaml).
 
+Add the following settings in the `config/services.yaml` file, to configure the Jaxon library.
+
+```yaml
+imports:
+    ...
+    - { resource: packages/jaxon.yaml }
+```
+
 This config file by default registers Jaxon classes in the `jaxon/ajax` directory with the `\Jaxon\Ajax` namespace.
-Make sure this directory exists, even if it is empty.
 
 The last step is to define a controller action to process Jaxon ajax requests, and insert Jaxon js and css codes in the pages where they are required.
 
@@ -86,7 +84,7 @@ class DemoController extends AbstractController
 Configuration
 ------------
 
-The settings in the `config/jaxon.yml` config file are separated into two sections.
+The settings in the `config/package/jaxon.yml` config file are separated into two sections.
 The options in the `lib` section are those of the Jaxon core library, while the options in the `app` sections are those of the Symfony application.
 
 The following options can be defined in the `app` section of the config file.
