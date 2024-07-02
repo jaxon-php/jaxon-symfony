@@ -57,18 +57,21 @@ class Jaxon extends AbstractApp
         $this->setup('');
 
         // Filters for custom Jaxon attributes
-        $template->addFilter(new TwigFilter('jxnFunc',
-            fn(JsExpr $xJsExpr) => attr()->func($xJsExpr), ['is_safe' => ['html']]));
-        $template->addFilter(new TwigFilter('jxnShow',
-            fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
         $template->addFilter(new TwigFilter('jxnHtml',
             fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
+        $template->addFilter(new TwigFilter('jxnShow',
+            fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
+        $template->addFilter(new TwigFilter('jxnTarget',
+            fn(string $name = '') => attr()->target($name), ['is_safe' => ['html']]));
+        $template->addFilter(new TwigFilter('jxnOn',
+            fn(string|array $on, JsExpr $xJsExpr, array $options = []) =>
+                attr()->on($on, $xJsExpr, $options), ['is_safe' => ['html']]));
 
         // Functions for custom Jaxon attributes
         $template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
         $template->addFunction(new TwigFunction('js', fn(...$aParams) => js(...$aParams)));
-        $template->addFunction(new TwigFunction('pm', fn(...$aParams) => pm(...$aParams)));
         $template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
+        $template->addFunction(new TwigFunction('pm', fn() => pm()));
 
         // Register this object into the Jaxon container.
         jaxon()->di()->set(AppInterface::class, function() {
