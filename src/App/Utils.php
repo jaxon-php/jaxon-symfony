@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Symfony;
+namespace Jaxon\Symfony\App;
 
 use Symfony\Component\HttpKernel\Kernel;
 

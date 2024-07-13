@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Symfony;
+namespace Jaxon\Symfony\App;
 
 use Jaxon\App\AbstractApp;
 use Jaxon\App\AppInterface;
@@ -54,7 +54,7 @@ class Jaxon extends AbstractApp
     {
         // Setup the Jaxon library.
         parent::__construct();
-        $this->setup('');
+        $this->setup();
 
         // Filters for custom Jaxon attributes
         $template->addFilter(new TwigFilter('jxnHtml',

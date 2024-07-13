@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Symfony;
+namespace Jaxon\Symfony\App;
 
 use Jaxon\App\View\Store;
 use Jaxon\App\View\ViewInterface;

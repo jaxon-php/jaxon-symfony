@@ -1,7 +1,7 @@
 services:
     jaxon.ajax.utils:
-        class: Jaxon\Symfony\Utils
-    Jaxon\Symfony\Jaxon:
+        class: Jaxon\Symfony\App\Utils
+    Jaxon\Symfony\App\Jaxon:
         arguments:
             - '@kernel'
             - '@logger'
