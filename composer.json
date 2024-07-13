@@ -17,6 +17,9 @@
         "symfony/framework-bundle": "5.*|6.*",
         "symfony/expression-language": "*"
     },
+    "require-dev": {
+        "twig/twig": "^3.10"
+    },
     "provide": {
         "jaxon-php/jaxon-view-twig": "v5.x-dev"
     },
