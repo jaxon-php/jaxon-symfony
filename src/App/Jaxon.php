@@ -52,43 +52,46 @@ class Jaxon extends AbstractApp
         private TemplateEngine $template, private FilesystemLoader $loader, private $session,
         private array $aOptions)
     {
-        // Setup the Jaxon library.
         parent::__construct();
-        $this->setup();
-
-        // Filters for custom Jaxon attributes
-        $template->addFilter(new TwigFilter('jxnHtml',
-            fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
-        $template->addFilter(new TwigFilter('jxnShow',
-            fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
-
-        // Functions for custom Jaxon attributes
-        $template->addFunction(new TwigFunction('jxnHtml',
-            fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
-        $template->addFunction(new TwigFunction('jxnShow',
-            fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
-        $template->addFunction(new TwigFunction('jxnTarget',
-            fn(string $name = '') => attr()->target($name), ['is_safe' => ['html']]));
-        $template->addFunction(new TwigFunction('jxnOn',
-            fn(string|array $on, JsExpr $xJsExpr, array $options = []) =>
-                attr()->on($on, $xJsExpr, $options), ['is_safe' => ['html']]));
-        $template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
-        $template->addFunction(new TwigFunction('js', fn(...$aParams) => js(...$aParams)));
-        $template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
-        $template->addFunction(new TwigFunction('pm', fn() => pm()));
-
-        // Register this object into the Jaxon container.
-        jaxon()->di()->set(AppInterface::class, function() {
-            return $this;
-        });
     }
 
     /**
      * @inheritDoc
      * @throws SetupException
      */
-    public function setup(string $sConfigFile)
+    public function setup()
     {
+        // Register this object into the Jaxon container.
+        jaxon()->di()->set(AppInterface::class, function() {
+            return $this;
+        });
+
+        // Filters for custom Jaxon attributes
+        $this->template->addFilter(new TwigFilter('jxnHtml',
+            fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
+        $this->template->addFilter(new TwigFilter('jxnShow',
+            fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
+
+        // Functions for custom Jaxon attributes
+        $this->template->addFunction(new TwigFunction('jxnHtml',
+            fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnShow',
+            fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnTarget',
+            fn(string $name = '') => attr()->target($name), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnOn',
+            fn(string|array $on, JsExpr $xJsExpr, array $options = []) =>
+                attr()->on($on, $xJsExpr, $options), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
+        $this->template->addFunction(new TwigFunction('js', fn(...$aParams) => js(...$aParams)));
+        $this->template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
+        $this->template->addFunction(new TwigFunction('pm', fn() => pm()));
+
+        // Functions for Jaxon js and CSS codes
+        $this->template->addFunction(new TwigFunction('jxnCss', fn() => jaxon()->css(), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnJs', fn() => jaxon()->js(), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnScript', fn() => jaxon()->script(), ['is_safe' => ['html']]));
+
         // Add the view renderer
         $this->addViewRenderer('twig', '.html.twig', function() {
             return new View($this->template, $this->loader);

@@ -10,13 +10,13 @@ Add the following lines in the `composer.json` file, and run the `composer updat
 
 ```json
 "require": {
-    "jaxon-php/jaxon-symfony": "v5.x-dev"
+    "jaxon-php/jaxon-symfony": "^5.0"
 }
 ```
 
-Or run the `composer require jaxon-php/jaxon-symfony v5.x-dev` command.
+Or run the `composer require jaxon-php/jaxon-symfony ^5.0` command.
 
-Declare the Jaxon bundle in the `config/bundle.php` file.
+Add the Jaxon bundle in the `config/bundle.php` file.
 
 ```php
 return [
@@ -39,46 +39,116 @@ imports:
 
 This config file by default registers Jaxon classes in the `jaxon/ajax` directory with the `\Jaxon\Ajax` namespace.
 
-The last step is to define a controller action to process Jaxon ajax requests, and insert Jaxon js and css codes in the pages where they are required.
+The Jaxon library must be setup on all pages that need to show Jaxon related content, using an event subscriber for example.
 
 ```php
-use Jaxon\Symfony\Jaxon;
+<?php
 
-class DemoController extends AbstractController
+// src/EventSubscriber/JaxonSubscriber.php
+namespace App\EventSubscriber;
+
+use App\Controller\DemoController;
+use App\Controller\JaxonController;
+use Jaxon\Symfony\App\Jaxon;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+
+use function is_array;
+
+class JaxonSubscriber implements EventSubscriberInterface
 {
-    /**
-     * Process Jaxon ajax requests. This route must be the same that is set in the Jaxon config.
-     *
-     * @Route("/ajax", name="jaxon.ajax")
-     */
-    public function jaxon(Jaxon $jaxon)
+    public function __construct(private Jaxon $jaxon)
+    {}
+
+    public function onKernelController(ControllerEvent $event)
+    {
+        $controller = $event->getController();
+
+        // when a controller class defines multiple action methods, the controller
+        // is returned as [$controllerInstance, 'methodName']
+        if (is_array($controller)) {
+            $controller = $controller[0];
+        }
+
+        // Select the controllers with Jaxon related content.
+        if ($controller instanceof JaxonController || $controller instanceof DemoController) {
+            $this->jaxon->setup();
+        }
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::CONTROLLER => 'onKernelController',
+        ];
+    }
+}
+```
+
+Define a controller action to process Jaxon ajax requests.
+
+```php
+use Jaxon\Symfony\App\Jaxon;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+class JaxonController extends AbstractController
+{
+    #[Route('jaxon', name: 'jaxon.ajax', methods: ['POST'])]
+    public function __invoke(Jaxon $jaxon)
     {
         if(!$jaxon->canProcessRequest())
         {
-            // Jaxon failed to find a plugin to process the request
             return; // Todo: return an error message
         }
 
         $jaxon->processRequest();
         return $jaxon->httpResponse();
     }
+}
+```
 
-    /**
-     * Insert Jaxon js and css codes in the page.
-     *
-     * @Route("/", name="homepage")
-     */
-    public function index(Jaxon $jaxon)
+Insert Jaxon js and css codes in the pages that need to show Jaxon related content, using the `Twig` functions provided by the Jaxon bundle.
+
+```php
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use function Jaxon\rq;
+
+class DemoController extends AbstractController
+{
+    #[Route('/', name: 'demo.home')]
+    public function __invoke()
     {
-        // Insert Jaxon codes into the page
+        // Print the page
         return $this->render('demo/index.html.twig', [
-            ...
-            'jaxonCss' => $jaxon->css(),
-            'jaxonJs' => $jaxon->js(),
-            'jaxonScript' => $jaxon->script(),
+            'pageTitle' => "Symfony Framework",
         ]);
     }
 }
+```
+
+```php
+// templates/demo/index.html.twig
+
+<!-- In page header -->
+
+{{ jxnCss() }}
+</head>
+
+<body>
+
+<!-- Page content here -->
+
+</body>
+
+<!-- In page footer -->
+
+{{ jxnJs() }}
+
+{{ jxnScript() }}
 ```
 
 Configuration
