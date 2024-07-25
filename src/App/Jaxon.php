@@ -71,26 +71,39 @@ class Jaxon extends AbstractApp
             fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnShow',
             fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
+        $this->template->addFilter(new TwigFilter('jxnOn',
+            fn(JsExpr $xJsExpr, string|array $on, array $options = []) =>
+                attr()->on($on, $xJsExpr, $options), ['is_safe' => ['html']]));
+        $this->template->addFilter(new TwigFilter('jxnClick',
+            fn(JsExpr $xJsExpr, array $options = []) =>
+                attr()->click($xJsExpr, $options), ['is_safe' => ['html']]));
 
         // Functions for custom Jaxon attributes
         $this->template->addFunction(new TwigFunction('jxnHtml',
             fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnShow',
             fn(JxnCall $xJxnCall) => attr()->show($xJxnCall), ['is_safe' => ['html']]));
-        $this->template->addFunction(new TwigFunction('jxnTarget',
-            fn(string $name = '') => attr()->target($name), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnOn',
             fn(string|array $on, JsExpr $xJsExpr, array $options = []) =>
                 attr()->on($on, $xJsExpr, $options), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnClick',
+            fn(JsExpr $xJsExpr, array $options = []) =>
+                attr()->click($xJsExpr, $options), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnTarget',
+            fn(string $name = '') => attr()->target($name), ['is_safe' => ['html']]));
+
         $this->template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
         $this->template->addFunction(new TwigFunction('js', fn(...$aParams) => js(...$aParams)));
         $this->template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
         $this->template->addFunction(new TwigFunction('pm', fn() => pm()));
 
         // Functions for Jaxon js and CSS codes
-        $this->template->addFunction(new TwigFunction('jxnCss', fn() => jaxon()->css(), ['is_safe' => ['html']]));
-        $this->template->addFunction(new TwigFunction('jxnJs', fn() => jaxon()->js(), ['is_safe' => ['html']]));
-        $this->template->addFunction(new TwigFunction('jxnScript', fn() => jaxon()->script(), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnCss',
+            fn() => jaxon()->css(), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnJs',
+            fn() => jaxon()->js(), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnScript',
+            fn() => jaxon()->script(), ['is_safe' => ['html']]));
 
         // Add the view renderer
         $this->addViewRenderer('twig', '.html.twig', function() {
