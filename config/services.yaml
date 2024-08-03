@@ -1,0 +1,11 @@
+services:
+    jaxon.ajax.utils:
+        class: Jaxon\Symfony\App\Utils
+    Jaxon\Symfony\App\Jaxon:
+        arguments:
+            - '@kernel'
+            - '@logger'
+            - '@twig'
+            - '@twig.loader.filesystem'
+            - '@=service(service("jaxon.ajax.utils").getSessionService())'
+            - '%jaxon%'
