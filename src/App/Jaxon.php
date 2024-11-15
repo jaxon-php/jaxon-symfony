@@ -59,7 +59,7 @@ class Jaxon extends AbstractApp
      * @inheritDoc
      * @throws SetupException
      */
-    public function setup(string $_)
+    public function setup(string $_ = '')
     {
         // Register this object into the Jaxon container.
         jaxon()->di()->set(AppInterface::class, function() {
