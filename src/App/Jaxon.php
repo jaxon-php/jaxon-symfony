@@ -72,11 +72,11 @@ class Jaxon extends AbstractApp
         $this->template->addFilter(new TwigFilter('jxnShow',
             fn(JxnCall $xJxnCall, string $item = '') => attr()->show($xJxnCall, $item), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnOn',
-            fn(JsExpr $xJsExpr, string|array $on, array $options = []) =>
-                attr()->on($on, $xJsExpr, $options), ['is_safe' => ['html']]));
+            fn(JsExpr $xJsExpr, string|array $on) => attr()->on($on, $xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnClick',
-            fn(JsExpr $xJsExpr, array $options = []) =>
-                attr()->click($xJsExpr, $options), ['is_safe' => ['html']]));
+            fn(JsExpr $xJsExpr) => attr()->click($xJsExpr), ['is_safe' => ['html']]));
+        $this->template->addFilter(new TwigFilter('jxnEvent',
+            fn(JsExpr $xJsExpr, array $on) => attr()->event($on, $xJsExpr), ['is_safe' => ['html']]));
 
         // Functions for custom Jaxon attributes
         $this->template->addFunction(new TwigFunction('jxnHtml',
@@ -84,11 +84,11 @@ class Jaxon extends AbstractApp
         $this->template->addFunction(new TwigFunction('jxnShow',
             fn(JxnCall $xJxnCall, string $item = '') => attr()->show($xJxnCall, $item), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnOn',
-            fn(string|array $on, JsExpr $xJsExpr, array $options = []) =>
-                attr()->on($on, $xJsExpr, $options), ['is_safe' => ['html']]));
+            fn(string|array $on, JsExpr $xJsExpr) => attr()->on($on, $xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnClick',
-            fn(JsExpr $xJsExpr, array $options = []) =>
-                attr()->click($xJsExpr, $options), ['is_safe' => ['html']]));
+            fn(JsExpr $xJsExpr) => attr()->click($xJsExpr), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnEvent',
+            fn(array $on, JsExpr $xJsExpr) => attr()->event($on, $xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnTarget',
             fn(string $name = '') => attr()->target($name), ['is_safe' => ['html']]));
 
