@@ -2,7 +2,7 @@
 
 namespace Jaxon\Symfony\App;
 
-use Jaxon\App\AbstractApp;
+use Jaxon\App\Ajax\AbstractApp;
 use Jaxon\App\AppInterface;
 use Jaxon\Exception\SetupException;
 use Jaxon\Script\JsExpr;
