@@ -47,7 +47,7 @@ class Container implements PsrContainerInterface
      *
      * @return bool
      */
-    public function has(string $sClass)
+    public function has(string $sClass): bool
     {
         return ($this->locator !== null && $this->locator->has($sClass)) || $this->container->has($sClass);
     }

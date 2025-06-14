@@ -103,8 +103,7 @@ class JaxonController extends AbstractController
             return; // Todo: return an error message
         }
 
-        $jaxon->processRequest();
-        return $jaxon->httpResponse();
+        return $jaxon->processRequest();
     }
 }
 ```
@@ -114,8 +113,6 @@ Insert Jaxon js and css codes in the pages that need to show Jaxon related conte
 ```php
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use function Jaxon\rq;
 
 class DemoController extends AbstractController
 {
@@ -194,7 +191,6 @@ class HelloWorld extends \Jaxon\App\CallableClass
     public function sayHello()
     {
         $this->response->assign('div2', 'innerHTML', 'Hello World!');
-        return $this->response;
     }
 }
 ```

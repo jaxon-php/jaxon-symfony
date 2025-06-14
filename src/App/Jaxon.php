@@ -5,8 +5,8 @@ namespace Jaxon\Symfony\App;
 use Jaxon\App\Ajax\AbstractApp;
 use Jaxon\App\AppInterface;
 use Jaxon\Exception\SetupException;
+use Jaxon\Script\Call\JxnCall;
 use Jaxon\Script\JsExpr;
-use Jaxon\Script\JxnCall;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -20,9 +20,9 @@ use Twig\TwigFunction;
 use function is_a;
 use function Jaxon\attr;
 use function Jaxon\jaxon;
+use function Jaxon\je;
+use function Jaxon\jo;
 use function Jaxon\jq;
-use function Jaxon\js;
-use function Jaxon\pm;
 use function Jaxon\rq;
 use function rtrim;
 
@@ -56,15 +56,24 @@ class Jaxon extends AbstractApp
     }
 
     /**
+     * @param array $events
+     *
+     * @return string
+     */
+    private function setJxnEvent(array $events): string
+    {
+        return isset($events[0]) && is_array($events[0]) ?
+            attr()->events($events) : attr()->event($events);
+    }
+
+    /**
      * @inheritDoc
      * @throws SetupException
      */
-    public function setup(string $_ = '')
+    public function setup(string $_ = ''): void
     {
         // Register this object into the Jaxon container.
-        jaxon()->di()->set(AppInterface::class, function() {
-            return $this;
-        });
+        jaxon()->di()->set(AppInterface::class, fn() => $this);
 
         // Filters for custom Jaxon attributes
         $this->template->addFilter(new TwigFilter('jxnHtml',
@@ -74,11 +83,11 @@ class Jaxon extends AbstractApp
         $this->template->addFilter(new TwigFilter('jxnPagination',
             fn(JxnCall $xJxnCall) => attr()->pagination($xJxnCall), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnOn',
-            fn(JsExpr $xJsExpr, string|array $on) => attr()->on($on, $xJsExpr), ['is_safe' => ['html']]));
+            fn(JsExpr $xJsExpr, string $event) => attr()->on($event, $xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnClick',
             fn(JsExpr $xJsExpr) => attr()->click($xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnEvent',
-            fn(JsExpr $xJsExpr, array $on) => attr()->event($on, $xJsExpr), ['is_safe' => ['html']]));
+            fn(array $events) => $this->setJxnEvent($events), ['is_safe' => ['html']]));
 
         // Functions for custom Jaxon attributes
         $this->template->addFunction(new TwigFunction('jxnHtml',
@@ -88,18 +97,16 @@ class Jaxon extends AbstractApp
         $this->template->addFunction(new TwigFunction('jxnPagination',
             fn(JxnCall $xJxnCall) => attr()->pagination($xJxnCall), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnOn',
-            fn(string|array $on, JsExpr $xJsExpr) => attr()->on($on, $xJsExpr), ['is_safe' => ['html']]));
+            fn(string $event, JsExpr $xJsExpr) => attr()->on($event, $xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnClick',
             fn(JsExpr $xJsExpr) => attr()->click($xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnEvent',
-            fn(array $on, JsExpr $xJsExpr) => attr()->event($on, $xJsExpr), ['is_safe' => ['html']]));
-        $this->template->addFunction(new TwigFunction('jxnTarget',
-            fn(string $name = '') => attr()->target($name), ['is_safe' => ['html']]));
+            fn(array $events) => $this->setJxnEvent($events), ['is_safe' => ['html']]));
 
         $this->template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
-        $this->template->addFunction(new TwigFunction('js', fn(...$aParams) => js(...$aParams)));
+        $this->template->addFunction(new TwigFunction('je', fn(...$aParams) => je(...$aParams)));
+        $this->template->addFunction(new TwigFunction('jo', fn(...$aParams) => jo(...$aParams)));
         $this->template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
-        $this->template->addFunction(new TwigFunction('pm', fn() => pm()));
 
         // Functions for Jaxon js and CSS codes
         $this->template->addFunction(new TwigFunction('jxnCss',
@@ -146,7 +153,7 @@ class Jaxon extends AbstractApp
     /**
      * @inheritDoc
      */
-    public function httpResponse(string $sCode = '200')
+    public function httpResponse(string $sCode = '200'): mixed
     {
         // Create and return a Symfony HTTP response
         $httpResponse = new HttpResponse();
