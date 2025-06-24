@@ -13,15 +13,15 @@
         "source": "https://github.com/jaxon-php/jaxon-symfony"
     },
     "require": {
-        "jaxon-php/jaxon-core": "dev-main",
-        "symfony/framework-bundle": "5.*|6.*",
+        "jaxon-php/jaxon-core": "^5.0",
+        "symfony/framework-bundle": "5.*|6.*|7.*",
         "symfony/expression-language": "*"
     },
     "require-dev": {
         "twig/twig": "^3.10"
     },
     "provide": {
-        "jaxon-php/jaxon-view-twig": "dev-main"
+        "jaxon-php/jaxon-view-twig": "^5.0"
     },
     "autoload": {
         "psr-4": {

@@ -3,7 +3,7 @@
 namespace Jaxon\Symfony\App;
 
 use Jaxon\App\Ajax\AbstractApp;
-use Jaxon\App\AppInterface;
+use Jaxon\App\Ajax\AppInterface;
 use Jaxon\Exception\SetupException;
 use Jaxon\Script\Call\JxnCall;
 use Jaxon\Script\JsExpr;
@@ -114,7 +114,8 @@ class Jaxon extends AbstractApp
         $this->template->addFunction(new TwigFunction('jxnJs',
             fn() => jaxon()->js(), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnScript',
-            fn() => jaxon()->script(), ['is_safe' => ['html']]));
+            fn(bool $bIncludeJs = false, bool $bIncludeCss = false) =>
+                jaxon()->script($bIncludeJs, $bIncludeCss), ['is_safe' => ['html']]));
 
         // Add the view renderer
         $this->addViewRenderer('twig', '.html.twig', function() {
