@@ -1,0 +1,4 @@
+jaxon_ajax_request:
+    path:     /jaxon
+    controller: Jaxon\Symfony\Controller\JaxonController
+    methods: [POST]

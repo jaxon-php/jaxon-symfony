@@ -67,13 +67,18 @@ class Jaxon extends AbstractApp
     }
 
     /**
-     * @inheritDoc
-     * @throws SetupException
+     * @return void
      */
-    public function setup(string $_ = ''): void
+    private function createTwigFunctions(): void
     {
-        // Register this object into the Jaxon container.
-        jaxon()->di()->set(AppInterface::class, fn() => $this);
+        // Functions for Jaxon js and CSS codes
+        $this->template->addFunction(new TwigFunction('jxnCss',
+            fn() => jaxon()->css(), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnJs',
+            fn() => jaxon()->js(), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnScript',
+            fn(bool $bIncludeJs = false, bool $bIncludeCss = false) =>
+                jaxon()->script($bIncludeJs, $bIncludeCss), ['is_safe' => ['html']]));
 
         // Filters for custom Jaxon attributes
         $this->template->addFilter(new TwigFilter('jxnHtml',
@@ -107,15 +112,20 @@ class Jaxon extends AbstractApp
         $this->template->addFunction(new TwigFunction('je', fn(...$aParams) => je(...$aParams)));
         $this->template->addFunction(new TwigFunction('jo', fn(...$aParams) => jo(...$aParams)));
         $this->template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
+    }
 
-        // Functions for Jaxon js and CSS codes
-        $this->template->addFunction(new TwigFunction('jxnCss',
-            fn() => jaxon()->css(), ['is_safe' => ['html']]));
-        $this->template->addFunction(new TwigFunction('jxnJs',
-            fn() => jaxon()->js(), ['is_safe' => ['html']]));
-        $this->template->addFunction(new TwigFunction('jxnScript',
-            fn(bool $bIncludeJs = false, bool $bIncludeCss = false) =>
-                jaxon()->script($bIncludeJs, $bIncludeCss), ['is_safe' => ['html']]));
+    /**
+     * @inheritDoc
+     * @throws SetupException
+     */
+    public function setup(string $_ = ''): void
+    {
+        $jaxon = jaxon();
+
+        // Register this object into the Jaxon container.
+        $jaxon->di()->set(AppInterface::class, fn() => $this);
+
+        $this->createTwigFunctions();
 
         // Add the view renderer
         $this->addViewRenderer('twig', '.html.twig', function() {
@@ -144,6 +154,9 @@ class Jaxon extends AbstractApp
         $aLibOptions = $this->aOptions['lib'] ?? [];
         $aAppOptions = $this->aOptions['app'] ?? [];
 
+        // Always load the global functions.
+        $jaxon->setAppOption('helpers.global', true);
+
         $this->bootstrap()
             ->lib($aLibOptions)
             ->app($aAppOptions)
@@ -161,7 +174,6 @@ class Jaxon extends AbstractApp
         $httpResponse->headers->set('Content-Type', $this->getContentType());
         $httpResponse->setStatusCode($sCode);
         $httpResponse->setContent($this->ajaxResponse()->getOutput());
-
         return $httpResponse;
     }
 }

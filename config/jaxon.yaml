@@ -2,8 +2,10 @@ parameters:
   jaxon:
     app:
       directories:
-        '%kernel.project_dir%/jaxon/ajax':
-          namespace: \Jaxon\Ajax
+        -
+          # path: '%kernel.project_dir%/ajax'
+          # namespace: \Jaxon\Ajax
+          # register: false
           # separator: '' # '.' or '_'
           # protected: []
 
@@ -12,7 +14,7 @@ parameters:
         language:                      "en"
         encoding:                      "UTF-8"
         request:
-          uri:                         "/ajax"
+          uri:                         "/jaxon"
         prefix:
           class:                       ""
         debug:

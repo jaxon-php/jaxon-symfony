@@ -9,3 +9,12 @@ services:
             - '@twig.loader.filesystem'
             - '@=service(service("jaxon.ajax.utils").getSessionService())'
             - '%jaxon%'
+    Jaxon\Symfony\EventListener\JaxonListener:
+        arguments:
+            - '@Jaxon\Symfony\App\Jaxon'
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller }
+    Jaxon\Symfony\Controller\JaxonController:
+        tags: ['controller.service_arguments']
+        calls:
+            - [setContainer, ['@service_container']]
