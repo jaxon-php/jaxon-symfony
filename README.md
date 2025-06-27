@@ -7,7 +7,7 @@ It works with Symfony version 5 or newer.
 Installation
 ------------
 
-Add the following lines in the `composer.json` file, and run the `composer update` command.
+Add the following lines in the `composer.json` file, and run the `composer update jaxon-php/` command.
 
 ```json
 "require": {
