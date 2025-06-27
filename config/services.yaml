@@ -2,6 +2,7 @@ services:
     jaxon.ajax.utils:
         class: Jaxon\Symfony\App\Utils
     Jaxon\Symfony\App\Jaxon:
+        shared: true
         arguments:
             - '@kernel'
             - '@logger'
@@ -10,10 +11,13 @@ services:
             - '@=service(service("jaxon.ajax.utils").getSessionService())'
             - '%jaxon%'
     Jaxon\Symfony\EventListener\JaxonListener:
+        shared: true
         arguments:
             - '@Jaxon\Symfony\App\Jaxon'
         tags:
-            - { name: kernel.event_listener, event: kernel.controller }
+            -
+                name: kernel.event_listener
+                event: kernel.controller
     Jaxon\Symfony\Controller\JaxonController:
         tags: ['controller.service_arguments']
         calls:
