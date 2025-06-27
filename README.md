@@ -1,7 +1,8 @@
 Jaxon integration for Symfony
 =============================
 
-This package integrates the [Jaxon library](https://github.com/jaxon-php/jaxon-core) into the Symfony framework.
+This package is an extension to integrate the [Jaxon library](https://github.com/jaxon-php/jaxon-core) into the Symfony framework.
+It works with Symfony version 5 or newer.
 
 Installation
 ------------
@@ -14,8 +15,6 @@ Add the following lines in the `composer.json` file, and run the `composer updat
 }
 ```
 
-Or run the `composer require jaxon-php/jaxon-symfony ^5.0` command.
-
 Add the Jaxon bundle in the `config/bundle.php` file.
 
 ```php
@@ -26,8 +25,13 @@ return [
 ];
 ```
 
-Create and edit the `packages/config/jaxon.yaml` file to suit the needs of your application.
-A sample config file is available [in this repo](https://github.com/jaxon-php/jaxon-symfony/blob/master/config/jaxon.yaml).
+Configuration
+-------------
+
+The library configuration is located in the `packages/config/jaxon.yaml` file.
+It must contain both the `app` and `lib` sections defined in the documentation (https://www.jaxon-php.org/docs/v5x/about/configuration.html).
+
+An example is presented in the `config/jaxon.yaml` file of this repo.
 
 Add the following settings in the `config/services.yaml` file, to configure the Jaxon library.
 
@@ -37,165 +41,21 @@ imports:
     - { resource: packages/jaxon.yaml }
 ```
 
-This config file by default registers Jaxon classes in the `jaxon/ajax` directory with the `\Jaxon\Ajax` namespace.
+Add the following settings in the `config/routes.yaml` file, to configure the Jaxon route.
 
-The Jaxon library must be setup on all pages that need to show Jaxon related content, using an event subscriber for example.
-
-```php
-<?php
-
-// src/EventSubscriber/JaxonSubscriber.php
-namespace App\EventSubscriber;
-
-use App\Controller\DemoController;
-use App\Controller\JaxonController;
-use Jaxon\Symfony\App\Jaxon;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
-
-use function is_array;
-
-class JaxonSubscriber implements EventSubscriberInterface
-{
-    public function __construct(private Jaxon $jaxon)
-    {}
-
-    public function onKernelController(ControllerEvent $event)
-    {
-        $controller = $event->getController();
-
-        // when a controller class defines multiple action methods, the controller
-        // is returned as [$controllerInstance, 'methodName']
-        if (is_array($controller)) {
-            $controller = $controller[0];
-        }
-
-        // Select the controllers with Jaxon related content.
-        if ($controller instanceof JaxonController || $controller instanceof DemoController) {
-            $this->jaxon->setup();
-        }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            KernelEvents::CONTROLLER => 'onKernelController',
-        ];
-    }
-}
+```yaml
+jaxon_ajax:
+    resource: "@JaxonBundle/config/routes.yaml"
+    prefix:   /
 ```
 
-Define a controller action to process Jaxon ajax requests.
+Routing and listener
+--------------------
 
-```php
-use Jaxon\Symfony\App\Jaxon;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+The extension provides a route and a controller to process Jaxon Ajax requests, as well as a listener on the `kernel.controller` event to bootstrap the Jaxon library.
 
-class JaxonController extends AbstractController
-{
-    #[Route('jaxon', name: 'jaxon.ajax', methods: ['POST'])]
-    public function __invoke(Jaxon $jaxon)
-    {
-        if(!$jaxon->canProcessRequest())
-        {
-            return; // Todo: return an error message
-        }
-
-        return $jaxon->processRequest();
-    }
-}
-```
-
-Insert Jaxon js and css codes in the pages that need to show Jaxon related content, using the `Twig` functions provided by the Jaxon bundle.
-
-```php
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-class DemoController extends AbstractController
-{
-    #[Route('/', name: 'demo.home')]
-    public function __invoke()
-    {
-        // Print the page
-        return $this->render('demo/index.html.twig', [
-            'pageTitle' => "Symfony Framework",
-        ]);
-    }
-}
-```
-
-```php
-// templates/demo/index.html.twig
-
-<!-- In page header -->
-
-{{ jxnCss() }}
-</head>
-
-<body>
-
-<!-- Page content here -->
-
-</body>
-
-<!-- In page footer -->
-
-{{ jxnJs() }}
-
-{{ jxnScript() }}
-```
-
-Configuration
-------------
-
-The settings in the `config/package/jaxon.yml` config file are separated into two sections.
-The options in the `lib` section are those of the Jaxon core library, while the options in the `app` sections are those of the Symfony application.
-
-The following options can be defined in the `app` section of the config file.
-
-| Name | Description |
-|------|---------------|
-| directories | An array of directory containing Jaxon application classes |
-| views   | An array of directory containing Jaxon application views |
-| | | |
-
-By default, the `views` array is empty. Views are rendered from the framework default location.
-There's a single entry in the `directories` array with the following values.
-
-| Name | Default value | Description                               |
-|------|---------------|-------------------------------------------|
-| directory | jaxon/ajax    | The directory of the Jaxon classes        |
-| namespace | \Jaxon\Ajax   | The namespace of the Jaxon classes        |
-| separator | .             | The separator in Jaxon js class names     |
-| protected | empty array   | Prevent Jaxon from exporting some methods |
-| |               |                                           |
-
-Usage
------
-
-### The Jaxon classes
-
-The Jaxon classes can inherit from `\Jaxon\App\CallableClass`.
-By default, they are located in the `jaxon/ajax` dir of the Symfony application, and the associated namespace is `\Jaxon\Ajax`.
-
-This is a simple example of a Jaxon class, defined in the `jaxon/Ajax/HelloWorld.php` file.
-
-```php
-namespace Jaxon\Ajax;
-
-class HelloWorld extends \Jaxon\App\CallableClass
-{
-    public function sayHello()
-    {
-        $this->response->assign('div2', 'innerHTML', 'Hello World!');
-    }
-}
-```
-
-### Dependency injection
+Dependency injection
+--------------------
 
 Services in Symfony can be declared as public or private, and [injected in Jaxon classes](https://www.jaxon-php.org/docs/v3x/advanced/dependency-injection.html).
 
@@ -217,6 +77,100 @@ services:
 
 The service locator must be declared as public, and take all the services that can be passed to Jaxon classes as arguments.
 See the [Symfony service locators documentation](https://symfony.com/doc/4.4/service_container/service_subscribers_locators.html).
+
+Twig functions
+--------------
+
+This extension provides the following Twig functions to insert Jaxon js and css codes in the pages that need to show Jaxon related content.
+
+```php
+// templates/demo/index.html.twig
+
+<!-- In page header -->
+{{ jxnCss() }}
+</head>
+
+<body>
+
+<!-- Page content here -->
+
+</body>
+
+<!-- In page footer -->
+{{ jxnJs() }}
+
+{{ jxnScript() }}
+```
+
+Call factories
+--------------
+
+This extension registers the following Blade directives for Jaxon [call factories](https://www.jaxon-php.org/docs/v5x/ui-features/call-factories.html) functions.
+
+> [!NOTE]
+> In the following examples, the `rqAppTest` var in the template is set to the value `rq(Demo\Ajax\App\AppTest::class)`.
+
+The `jxnBind` directive attaches a UI component to a DOM node, while the `jxnHtml` directive displays a component HTML code in a view.
+
+```php
+    <div class="col-md-12" {{ jxnBind(rqAppTest) }}>
+        {{ jxnHtml(rqAppTest) }}
+    </div>
+```
+
+The `jxnPagination` directive displays pagination links in a view.
+
+```php
+    <div class="col-md-12" {{ jxnPagination(rqAppTest) }}>
+    </div>
+```
+
+The `jxnOn` directive binds an event on a DOM node to a Javascript call defined with a `call factory`.
+
+```php
+    <select class="form-control"
+        {{ jxnOn('change', rqAppTest.setColor(jq()->val())) }}>
+        <option value="black" selected="selected">Black</option>
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+    </select>
+```
+
+The `jxnClick` directive is a shortcut to define a handler for the `click` event on a DOM node.
+
+```php
+    <button type="button" class="btn btn-primary"
+        {{ jxnClick(rqAppTest.sayHello(true)) }}>Click me</button>
+```
+
+The `jxnEvent` directive defines a set of events handlers on the children of a DOM nodes, using `jQuery` selectors.
+
+```php
+    <div class="row" {{ jxnEvent([
+        ['.app-color-choice', 'change', rqAppTest.setColor(jq()->val())]
+        ['.ext-color-choice', 'change', rqExtTest.setColor(jq()->val())]
+    ]) }}>
+        <div class="col-md-12">
+            <select class="form-control app-color-choice">
+                <option value="black" selected="selected">Black</option>
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+            </select>
+        </div>
+        <div class="col-md-12">
+            <select class="form-control ext-color-choice">
+                <option value="black" selected="selected">Black</option>
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+            </select>
+        </div>
+    </div>
+```
+
+The `jxnEvent` directive takes as parameter an array in which each entry is an array with a `jQuery` selector, an event and a `call factory`.
 
 Contribute
 ----------
