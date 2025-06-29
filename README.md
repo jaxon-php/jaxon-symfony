@@ -105,12 +105,12 @@ This extension provides the following Twig functions to insert Jaxon js and css 
 Call factories
 --------------
 
-This extension registers the following Blade directives for Jaxon [call factories](https://www.jaxon-php.org/docs/v5x/ui-features/call-factories.html) functions.
+This extension registers the following Twig functions for Jaxon [call factories](https://www.jaxon-php.org/docs/v5x/ui-features/call-factories.html) functions.
 
 > [!NOTE]
-> In the following examples, the `rqAppTest` var in the template is set to the value `rq(Demo\Ajax\App\AppTest::class)`.
+> In the following examples, the `rqAppTest` template variable is set to the value `rq(Demo\Ajax\App\AppTest::class)`.
 
-The `jxnBind` directive attaches a UI component to a DOM node, while the `jxnHtml` directive displays a component HTML code in a view.
+The `jxnBind` function attaches a UI component to a DOM element, while the `jxnHtml` function displays a component HTML code in a view.
 
 ```php
     <div class="col-md-12" {{ jxnBind(rqAppTest) }}>
@@ -118,18 +118,18 @@ The `jxnBind` directive attaches a UI component to a DOM node, while the `jxnHtm
     </div>
 ```
 
-The `jxnPagination` directive displays pagination links in a view.
+The `jxnPagination` function displays pagination links in a view.
 
 ```php
     <div class="col-md-12" {{ jxnPagination(rqAppTest) }}>
     </div>
 ```
 
-The `jxnOn` directive binds an event on a DOM node to a Javascript call defined with a `call factory`.
+The `jxnOn` function binds an event on a DOM element to a Javascript call defined with a `call factory`.
 
 ```php
     <select class="form-select"
-        {{ jxnOn('change', rqAppTest.setColor(jq()->val())) }}>
+        {{ jxnOn('change', rqAppTest.setColor(jq().val())) }}>
         <option value="black" selected="selected">Black</option>
         <option value="red">Red</option>
         <option value="green">Green</option>
@@ -137,19 +137,19 @@ The `jxnOn` directive binds an event on a DOM node to a Javascript call defined 
     </select>
 ```
 
-The `jxnClick` directive is a shortcut to define a handler for the `click` event on a DOM node.
+The `jxnClick` function is a shortcut to define a handler for the `click` event.
 
 ```php
     <button type="button" class="btn btn-primary"
         {{ jxnClick(rqAppTest.sayHello(true)) }}>Click me</button>
 ```
 
-The `jxnEvent` directive defines a set of events handlers on the children of a DOM nodes, using `jQuery` selectors.
+The `jxnEvent` function defines a set of events handlers on the children of a DOM element, using `jQuery` selectors.
 
 ```php
     <div class="row" {{ jxnEvent([
-        ['.app-color-choice', 'change', rqAppTest.setColor(jq()->val())]
-        ['.ext-color-choice', 'change', rqExtTest.setColor(jq()->val())]
+        ['.app-color-choice', 'change', rqAppTest.setColor(jq().val())]
+        ['.ext-color-choice', 'change', rqExtTest.setColor(jq().val())]
     ]) }}>
         <div class="col-md-12">
             <select class="form-control app-color-choice">
@@ -170,7 +170,7 @@ The `jxnEvent` directive defines a set of events handlers on the children of a D
     </div>
 ```
 
-The `jxnEvent` directive takes as parameter an array in which each entry is an array with a `jQuery` selector, an event and a `call factory`.
+The `jxnEvent` function takes as parameter an array in which each entry is an array with a `jQuery` selector, an event and a `call factory`.
 
 Contribute
 ----------
