@@ -45,8 +45,8 @@ Add the following settings in the `config/routes.yaml` file, to configure the Ja
 
 ```yaml
 jaxon_ajax:
-    resource: "@JaxonBundle/config/routes.yaml"
-    prefix:   /
+    resource: 'Jaxon\Symfony\App\Jaxon::route'
+    type: service
 ```
 
 Routing and listener
