@@ -1,6 +1,8 @@
 parameters:
   jaxon:
     app:
+      request:
+        route:                         "jaxon.ajax"
       directories:
         -
           # path: '%kernel.project_dir%/ajax'

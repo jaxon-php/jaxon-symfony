@@ -10,6 +10,7 @@ services:
             - '@twig.loader.filesystem'
             - '@=service(service("jaxon.ajax.utils").getSessionService())'
             - '%jaxon%'
+        tags: ['routing.route_loader']
     Jaxon\Symfony\EventListener\JaxonListener:
         shared: true
         arguments:

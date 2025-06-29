@@ -8,10 +8,12 @@ use Jaxon\Exception\SetupException;
 use Jaxon\Script\Call\JxnCall;
 use Jaxon\Script\JsExpr;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Response as HttpResponse;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Twig\Environment as TemplateEngine;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
@@ -48,11 +50,29 @@ class Jaxon extends AbstractApp
      * @param array $aOptions
      * @throws SetupException
      */
-    public function __construct(private KernelInterface $kernel, private LoggerInterface $logger,
-        private TemplateEngine $template, private FilesystemLoader $loader, private $session,
-        private array $aOptions)
+    public function __construct(private KernelInterface $kernel,
+        private LoggerInterface $logger, private TemplateEngine $template,
+        private FilesystemLoader $loader, private $session, private array $aOptions)
     {
         parent::__construct();
+    }
+
+    /**
+     * @return RouteCollection
+     */
+    public function route(): RouteCollection
+    {
+        $routes = new RouteCollection();
+
+        $routePath = $this->aOptions['lib']['core']['request']['uri'] ?? '/jaxon';
+        $defaults = [
+            '_controller' => 'Jaxon\Symfony\Controller\JaxonController',
+        ];
+        $route = new Route($routePath, $defaults);
+        $routeName = $this->aOptions['app']['request']['route'] ?? 'jaxon.ajax';
+        $routes->add($routeName, $route);
+
+        return $routes;
     }
 
     /**
