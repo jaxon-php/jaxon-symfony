@@ -20,6 +20,7 @@ use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 use function is_a;
+use function is_array;
 use function Jaxon\attr;
 use function Jaxon\jaxon;
 use function Jaxon\je;
@@ -63,6 +64,12 @@ class Jaxon extends AbstractApp
     public function route(): RouteCollection
     {
         $routes = new RouteCollection();
+
+        // Do not create the route if its config section is not present.
+        if(!is_array($this->aOptions['app']['request'] ?? null))
+        {
+            return $routes;
+        }
 
         $routePath = $this->aOptions['lib']['core']['request']['uri'] ?? '/jaxon';
         $defaults = [
