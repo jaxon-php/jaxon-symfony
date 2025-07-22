@@ -29,7 +29,7 @@ class View implements ViewInterface
     /**
      * @inheritDoc
      */
-    public function addNamespace(string $sNamespace, string $sDirectory, string $sExtension = '')
+    public function addNamespace(string $sNamespace, string $sDirectory, string $sExtension = ''): void
     {
         $this->aExtensions[$sNamespace] = '.' . ltrim($sExtension, '.');
         $this->xLoader->addPath($sDirectory, $sNamespace);
