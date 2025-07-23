@@ -134,6 +134,8 @@ class Jaxon extends AbstractApp
             fn(JsExpr $xJsExpr) => attr()->click($xJsExpr), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnEvent',
             fn(array $events) => $this->setJxnEvent($events), ['is_safe' => ['html']]));
+        $this->template->addFunction(new TwigFunction('jxnPackage',
+            fn(string $sClass, string $sCode = 'html') => attr()->package($sClass, $sCode), ['is_safe' => ['html']]));
 
         $this->template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
         $this->template->addFunction(new TwigFunction('je', fn(...$aParams) => je(...$aParams)));
