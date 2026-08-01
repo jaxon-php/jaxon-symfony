@@ -20,12 +20,10 @@ class JaxonListener
 
     public function onKernelController(ControllerEvent $event)
     {
-        if($this->alreadyCalled)
+        if(!$this->alreadyCalled)
         {
-            return;
+            $this->alreadyCalled = true;
+            $this->jaxon->setup();
         }
-
-        $this->alreadyCalled = true;
-        $this->jaxon->setup();
     }
 }

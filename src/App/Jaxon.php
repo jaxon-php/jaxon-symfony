@@ -5,8 +5,6 @@ namespace Jaxon\Symfony\App;
 use Jaxon\App\Ajax\AbstractApp;
 use Jaxon\App\Ajax\AppInterface;
 use Jaxon\Exception\SetupException;
-use Jaxon\Script\Call\JxnCall;
-use Jaxon\Script\JsExpr;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -100,47 +98,46 @@ class Jaxon extends AbstractApp
     {
         // Functions for Jaxon js and CSS codes
         $this->template->addFunction(new TwigFunction('jxnCss',
-            fn() => jaxon()->css(), ['is_safe' => ['html']]));
+            jaxon()->css(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnJs',
-            fn() => jaxon()->js(), ['is_safe' => ['html']]));
+            jaxon()->js(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnScript',
-            fn(bool $bIncludeJs = false, bool $bIncludeCss = false) =>
-                jaxon()->script($bIncludeJs, $bIncludeCss), ['is_safe' => ['html']]));
+            jaxon()->script(...), ['is_safe' => ['html']]));
 
         // Filters for custom Jaxon attributes
         $this->template->addFilter(new TwigFilter('jxnHtml',
-            fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
+            attr()->html(...), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnBind',
-            fn(JxnCall $xJxnCall, string $item = '') => attr()->bind($xJxnCall, $item), ['is_safe' => ['html']]));
+            attr()->bind(...), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnPagination',
-            fn(JxnCall $xJxnCall) => attr()->pagination($xJxnCall), ['is_safe' => ['html']]));
+            attr()->pagination(...), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnOn',
-            fn(JsExpr $xJsExpr, string $event) => attr()->on($event, $xJsExpr), ['is_safe' => ['html']]));
+            attr()->on(...), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnClick',
-            fn(JsExpr $xJsExpr) => attr()->click($xJsExpr), ['is_safe' => ['html']]));
+            attr()->click(...), ['is_safe' => ['html']]));
         $this->template->addFilter(new TwigFilter('jxnEvent',
-            fn(array $events) => $this->setJxnEvent($events), ['is_safe' => ['html']]));
+            $this->setJxnEvent(...), ['is_safe' => ['html']]));
 
         // Functions for custom Jaxon attributes
         $this->template->addFunction(new TwigFunction('jxnHtml',
-            fn(JxnCall $xJxnCall) => attr()->html($xJxnCall), ['is_safe' => ['html']]));
+            attr()->html(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnBind',
-            fn(JxnCall $xJxnCall, string $item = '') => attr()->bind($xJxnCall, $item), ['is_safe' => ['html']]));
+            attr()->bind(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnPagination',
-            fn(JxnCall $xJxnCall) => attr()->pagination($xJxnCall), ['is_safe' => ['html']]));
+            attr()->pagination(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnOn',
-            fn(string $event, JsExpr $xJsExpr) => attr()->on($event, $xJsExpr), ['is_safe' => ['html']]));
+            attr()->on(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnClick',
-            fn(JsExpr $xJsExpr) => attr()->click($xJsExpr), ['is_safe' => ['html']]));
+            attr()->click(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnEvent',
-            fn(array $events) => $this->setJxnEvent($events), ['is_safe' => ['html']]));
+            $this->setJxnEvent(...), ['is_safe' => ['html']]));
         $this->template->addFunction(new TwigFunction('jxnPackage',
-            fn(string $sClass, string $sCode = 'html') => attr()->package($sClass, $sCode), ['is_safe' => ['html']]));
+            attr()->package(...), ['is_safe' => ['html']]));
 
-        $this->template->addFunction(new TwigFunction('jq', fn(...$aParams) => jq(...$aParams)));
-        $this->template->addFunction(new TwigFunction('je', fn(...$aParams) => je(...$aParams)));
-        $this->template->addFunction(new TwigFunction('jo', fn(...$aParams) => jo(...$aParams)));
-        $this->template->addFunction(new TwigFunction('rq', fn(...$aParams) => rq(...$aParams)));
+        $this->template->addFunction(new TwigFunction('jq', jq(...)));
+        $this->template->addFunction(new TwigFunction('je', je(...)));
+        $this->template->addFunction(new TwigFunction('jo', jo(...)));
+        $this->template->addFunction(new TwigFunction('rq', rq(...)));
     }
 
     /**
