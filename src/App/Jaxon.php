@@ -7,8 +7,8 @@ use Jaxon\App\Ajax\AppInterface;
 use Jaxon\Exception\SetupException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -43,7 +43,7 @@ class Jaxon extends AbstractApp
      * @param LoggerInterface $logger
      * @param TemplateEngine $template
      * @param FilesystemLoader $loader
-     * @param mixed $session
+     * @param RequestStack $request
      * @param array $aOptions
      *
      * @param array $aOptions
@@ -51,7 +51,8 @@ class Jaxon extends AbstractApp
      */
     public function __construct(private KernelInterface $kernel,
         private LoggerInterface $logger, private TemplateEngine $template,
-        private FilesystemLoader $loader, private $session, private array $aOptions)
+        private FilesystemLoader $loader, private RequestStack $request,
+        private array $aOptions)
     {
         parent::__construct();
     }
@@ -159,8 +160,7 @@ class Jaxon extends AbstractApp
         });
         // Set the session manager
         $this->setSessionManager(function() {
-            return new Session(is_a($this->session, SessionInterface::class) ?
-                $this->session : $this->session->getSession());
+            return new Session($this->request->getSession());
         });
         // Set the framework service container wrapper
         $container = $this->kernel->getContainer();

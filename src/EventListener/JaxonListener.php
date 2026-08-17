@@ -18,7 +18,7 @@ class JaxonListener
     public function __construct(private Jaxon $jaxon)
     {}
 
-    public function onKernelController(ControllerEvent $event)
+    public function onKernelController(ControllerEvent $event): void
     {
         if(!$this->alreadyCalled)
         {

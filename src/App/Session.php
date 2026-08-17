@@ -3,20 +3,12 @@
 namespace Jaxon\Symfony\App;
 
 use Jaxon\App\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface as SymfonySession;
 
 class Session implements SessionInterface
 {
-    /**
-     * The Symfony session manager
-     *
-     * @var mixed
-     */
-    protected $xSession = null;
-
-    public function __construct($session)
-    {
-        $this->xSession = $session;
-    }
+    public function __construct(private SymfonySession $xSession)
+    {}
 
     /**
      * @inheritDoc
